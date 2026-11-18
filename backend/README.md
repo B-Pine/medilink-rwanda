@@ -72,6 +72,19 @@ Emails (password reset) go to Mailpit: <http://localhost:8025>. In dev, Celery t
 (`CELERY_TASK_ALWAYS_EAGER=true`); to use a worker set it to `false` and run
 `celery -A config worker -l info` (Windows: add `--pool=solo`).
 
+**Turning staff two-step sign-in off (any environment, for testing):** a platform admin opens
+Platform → Feature flags and switches off "Staff two-step sign-in" (`security.staff_mfa`). Staff
+then sign in with the password alone, and "Confirm it's you" asks only for the password. Every such
+login is audited (`mfa_method: off_by_admin`). Switch it back on when testing is done.
+
+**Photos (Cloudinary):** set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and
+`CLOUDINARY_API_SECRET` (and the signed preset in `CLOUDINARY_UPLOAD_PRESET`). The browser uploads
+facility photos and logos, doctor and patient photos straight to Cloudinary with a signature from
+the API; only the public id is stored. The secret stays on the server: never in a `VITE_*`
+variable. `CLOUDINARY_URL` (the console's one-line form) works too. To check a server's setup, run
+`python manage.py cloudinary_check` there: it says which credential is missing, whether Cloudinary
+answers and whether the preset is signed (never printing the secret).
+
 **Testing without an authenticator app (dev only):** add `DEV_SKIP_STAFF_MFA=true` to `backend/.env`
 and restart the server. Staff then log in with email and password only; the audit log records
 `mfa_method: dev_skip`. It works only with `DEBUG` on: `manage.py check` refuses it otherwise

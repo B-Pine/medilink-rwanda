@@ -28,6 +28,7 @@ from medilink.facilities.models import (
     ServicePoint,
 )
 from medilink.facilities.views_base import FacilityView, Member, Needs, err, query_date
+from medilink.images.services import image_url
 from medilink.onboarding.services import facility_version
 from medilink.uploads import services as uploads
 from medilink.uploads.throttling import UploadRateThrottle
@@ -56,12 +57,40 @@ def profile_data(facility: Any) -> dict[str, Any]:
             "latitude": profile.latitude,
             "longitude": profile.longitude,
             "photos": profile.photo_file_ids,
+            "photo_public_ids": profile.photo_public_ids,
+            "photo_images": [
+                {
+                    "public_id": pid,
+                    "url": image_url(pid, w=1200, h=800),
+                    "thumb_url": image_url(pid, w=320, h=240),
+                }
+                for pid in profile.photo_public_ids
+            ],
+            "logo_public_id": profile.logo_public_id,
+            "logo_url": image_url(profile.logo_public_id, w=320, h=320, crop="pad"),
             "level_of_care": profile.level_of_care,
             "emergency_department": profile.emergency_department,
             "version": profile.version,
             "status_version": facility_version(facility),
         }
     ).data
+
+
+def _refresh_listing_now(facility: Any) -> None:
+    """Photos show on the public search cards at once, without waiting for the background
+    refresh (the Celery task still runs from the save signal)."""
+    from django.db import transaction
+
+    from medilink.scheduling import listing
+    from medilink.tenancy.context import rls_context
+
+    fid = facility.pk
+
+    def run() -> None:
+        with rls_context(facility_id=fid):
+            listing.refresh(fid)
+
+    transaction.on_commit(run)
 
 
 class ProfileView(FacilityView):
@@ -82,12 +111,22 @@ class ProfileView(FacilityView):
         responses={200: s.FacilityProfileSerializer, 409: err("conflict")},
     )
     def patch(self, request: Request) -> Response:
-        body = s.FacilityProfileUpdateSerializer(data=request.data)
-        body.is_valid(raise_exception=True)
         facility = self.facility()
+        profile = services.profile_of(facility)
+        body = s.FacilityProfileUpdateSerializer(
+            data=request.data,
+            # ids the profile already holds need no new check with Cloudinary
+            context={"keep_public_ids": {*profile.photo_public_ids, profile.logo_public_id} - {""}},
+        )
+        body.is_valid(raise_exception=True)
+        photo_ids = body.validated_data.get("photo_public_ids")
+        if photo_ids is not None and len(photo_ids) + len(profile.photo_file_ids) > MAX_PHOTOS:
+            raise exceptions.ValidationError({"photo_public_ids": ["Up to 6 photos."]})
         services.update_profile(
             facility, dict(body.validated_data), actor=request.user, request=request
         )
+        if {"photo_public_ids", "logo_public_id"} & set(body.validated_data):
+            _refresh_listing_now(facility)
         return Response(profile_data(facility))
 
 
@@ -107,7 +146,7 @@ class PhotoView(FacilityView):
         body.is_valid(raise_exception=True)
         facility = self.facility()
         profile = services.profile_of(facility)
-        if len(profile.photo_file_ids) >= MAX_PHOTOS:
+        if len(profile.photo_file_ids) + len(profile.photo_public_ids) >= MAX_PHOTOS:
             raise exceptions.ValidationError({"file": ["Up to 6 photos."]})
         try:
             file = uploads.receive(
@@ -123,6 +162,7 @@ class PhotoView(FacilityView):
         services.set_photos(
             facility, [*profile.photo_file_ids, file.pk], actor=request.user, request=request
         )
+        _refresh_listing_now(facility)
         return Response(profile_data(facility), status=status.HTTP_201_CREATED)
 
 
@@ -141,6 +181,7 @@ class PhotoDeleteView(FacilityView):
             actor=request.user,
             request=request,
         )
+        _refresh_listing_now(facility)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

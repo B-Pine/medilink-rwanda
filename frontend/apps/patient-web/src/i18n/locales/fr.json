@@ -477,6 +477,11 @@
     "withinKm": "À moins de {{km}} km",
     "none": "Aucun lieu ne correspond à ces filtres",
     "tryInstead": "Le plus proche : {{name}}",
-    "close": "Fermer"
+    "close": "Fermer",
+    "myInsurance": "Mon assurance : {{name}}",
+    "insurerOnly": "Seulement les lieux qui acceptent {{name}}.",
+    "insurerAll": "Les lieux qui acceptent {{name}} viennent en premier.",
+    "insurerAllLink": "Voir aussi les autres",
+    "insurerOnlyLink": "Seulement {{name}}"
   }
 }

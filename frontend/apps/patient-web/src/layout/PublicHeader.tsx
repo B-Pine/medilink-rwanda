@@ -1,5 +1,5 @@
-import { ArrowRight, Globe, List, Phone, Siren, SignIn } from "@phosphor-icons/react";
-import { cx, Logo, Sheet, ThemeSwitch } from "@medilink/ui";
+import { Globe, List, Phone, Siren, SignIn } from "@phosphor-icons/react";
+import { buttonClassName, cx, Logo, Sheet, ThemeSwitch } from "@medilink/ui";
 import { SUPPORTED_LANGUAGES } from "@medilink/ui/i18n";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -53,52 +53,19 @@ export function LanguageSelect({ className }: { className?: string }) {
 }
 
 /**
- * Emergency strip (redesign §Header): the one red on the page, above the header and never sticky.
- * Calling 912 is one tap on a phone.
+ * Public header (cleaner bar, 2026-11-16): one 64 px bar, no strip above it. The logo; the pages
+ * as plain text links, the current one underlined in green; then emergency (red, always there: a
+ * word on wide screens, an icon below), the language code and Sign in. Below 1200 px the pages
+ * move into a full-height menu that also offers "Call 912".
  */
-function EmergencyStrip() {
-  const { t } = useTranslation();
-  return (
-    // a landmark of its own, so screen-reader users can jump to it and nothing sits outside one
-    <aside
-      aria-label={t("nav.strip.label")}
-      // wide screens only: on phones the header's one emergency button does this job
-      className="ml-site-strip hidden border-b border-danger/10 bg-danger-bg/70 xl:block print:hidden"
-    >
-      <div className="mx-auto flex min-h-9 max-w-[88rem] flex-wrap items-center justify-between gap-x-4 px-4 text-caption sm:px-6">
-        <p className="m-0 flex items-center gap-2 text-fg-secondary">
-          <Siren aria-hidden="true" weight="bold" className="size-3.5 shrink-0 text-danger" />
-          <span className="hidden sm:inline">{t("nav.strip.long")}</span>
-          <span className="sm:hidden">{t("nav.strip.short")}</span>
-          <a
-            href="tel:912"
-            className="inline-flex min-h-9 items-center gap-1 font-bold text-danger underline-offset-4 hover:underline"
-          >
-            <Phone aria-hidden="true" weight="bold" className="size-3" />
-            {t("nav.strip.call")}
-          </a>
-          <span className="hidden md:inline">{t("nav.strip.free")}</span>
-        </p>
-        <Link
-          to="/emergency"
-          viewTransition
-          className="inline-flex min-h-9 items-center gap-1 font-semibold text-danger no-underline hover:underline"
-        >
-          {t("nav.strip.guide")}
-          <ArrowRight aria-hidden="true" weight="bold" className="size-3.5" />
-        </Link>
-      </div>
-    </aside>
-  );
-}
-
-/**
- * Public header: on wide screens a slim emergency line, then a 64 px bar: the logo, Home and the five
- * pages as one segmented group, the language as a code (RW / EN / FR) and Sign in. Below 1200 px
- * the bar keeps the logo, one emergency button and the menu; the menu is a full-height sheet.
- * Emergency shows once per screen size (audit 2026-11-07).
- */
-export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
+export function PublicHeader({
+  showLogin = true,
+  assistantSlot,
+}: {
+  showLogin?: boolean;
+  /** Where the assistant button sits on wide screens (PublicLayout portals it here). */
+  assistantSlot?: (element: HTMLElement | null) => void;
+}) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const navigation = useNavigation();
@@ -107,15 +74,14 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
 
   return (
     <>
-      <EmergencyStrip />
-      <header className="ml-site-header sticky top-0 z-30 border-b border-hairline bg-surface/80 backdrop-blur-xl backdrop-saturate-150 print:hidden">
+      <header className="ml-site-header sticky top-0 z-30 border-b border-hairline bg-surface/85 backdrop-blur-xl backdrop-saturate-150 print:hidden">
         {/* route loading: a thin bar while the next page's code or data loads */}
         <div
           aria-hidden="true"
           data-loading={navigation.state !== "idle"}
           className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
         />
-        <div className="mx-auto grid h-16 max-w-[88rem] grid-cols-[auto_1fr_auto] items-center gap-6 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-[88rem] items-center gap-3 px-4 sm:gap-8 sm:px-6">
           <Link
             to="/"
             viewTransition
@@ -124,9 +90,8 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
           >
             <Logo className="h-8" />
           </Link>
-          <nav aria-label={t("nav.label")} className="hidden min-w-0 justify-self-center xl:block">
-            {/* one segmented group; the current page is the raised pill */}
-            <ul className="m-0 flex list-none items-center gap-0.5 rounded-full bg-subtle/70 p-1 shadow-[inset_0_0_0_1px_var(--site-hairline)]">
+          <nav aria-label={t("nav.label")} className="hidden min-w-0 xl:block">
+            <ul className="m-0 flex list-none items-center gap-1 p-0">
               {PUBLIC_NAV.map((item) => (
                 <li key={item.to}>
                   <NavLink
@@ -134,21 +99,22 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
                     end={item.end}
                     viewTransition
                     className={cx(
-                      "relative inline-flex h-9 items-center rounded-full px-4 text-body-sm font-medium whitespace-nowrap text-fg-secondary no-underline",
+                      "relative inline-flex h-16 items-center px-3 text-body-sm font-medium whitespace-nowrap text-fg-secondary no-underline",
                       "transition-colors duration-200 ease-out-quint hover:text-fg",
                       "aria-[current=page]:font-semibold aria-[current=page]:text-fg",
                     )}
                   >
                     {({ isActive }) => (
                       <>
-                        {/* the raised pill of the current page glides between items */}
+                        {t(item.key)}
+                        {/* the current page: a short green line on the bar's edge, gliding
+                            between items on a view transition */}
                         {isActive && (
                           <span
                             aria-hidden="true"
-                            className="ml-nav-pill absolute inset-0 rounded-full bg-surface shadow-e1"
+                            className="ml-nav-pill absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary"
                           />
                         )}
-                        <span className="relative">{t(item.key)}</span>
                       </>
                     )}
                   </NavLink>
@@ -156,26 +122,53 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
               ))}
             </ul>
           </nav>
-          <div className="col-start-3 flex shrink-0 items-center gap-1.5">
-            <LanguageSelect className="hidden xl:inline-flex" />
-            {showLogin && (
+          <div className="ml-auto flex shrink-0 items-center gap-1">
+            {/* phones and tablets: the way in stays in sight, not behind the menu */}
+            <span className="mr-0.5 inline-flex xl:hidden">
               <Link
-                to="/login"
+                to="/find-care"
                 viewTransition
-                className="hidden h-10 items-center gap-2 rounded-full bg-forest px-5 text-body-sm font-semibold whitespace-nowrap text-on-forest no-underline shadow-e1 transition-[filter,box-shadow] duration-200 ease-out-quint hover:shadow-e2 hover:brightness-110 xl:inline-flex"
+                className={buttonClassName({
+                  pill: true,
+                  size: "sm",
+                  className: "ml-press h-10 px-4",
+                })}
               >
-                <SignIn aria-hidden="true" weight="bold" className="size-4" />
-                {t("nav.login")}
+                {t("nav.findCare")}
               </Link>
-            )}
+            </span>
+            {/* emergency stays one tap away on every screen, now in the bar instead of a strip */}
             <Link
               to="/emergency"
               viewTransition
-              aria-label={t("nav.emergency")}
-              className="inline-flex size-11 items-center justify-center rounded-full bg-danger-bg text-danger no-underline transition-colors duration-150 hover:bg-danger/15 xl:hidden"
+              aria-label={t("nav.strip.guide")}
+              className="inline-flex size-11 items-center justify-center gap-1.5 rounded-full text-body-sm font-semibold text-danger no-underline transition-colors duration-150 hover:bg-danger-bg xl:w-auto xl:px-3"
             >
-              <Siren aria-hidden="true" weight="bold" className="size-5" />
+              <Siren aria-hidden="true" weight="bold" className="size-5 xl:size-4" />
+              <span className="hidden xl:inline">{t("nav.strip.label")}</span>
             </Link>
+            {assistantSlot && <span ref={assistantSlot} className="hidden xl:contents" />}
+            <span aria-hidden="true" className="mx-1.5 hidden h-6 w-px bg-hairline xl:block" />
+            <span className="hidden xl:inline-flex">
+              <LanguageSelect />
+            </span>
+            {/* the wrapper holds the breakpoint: the button's own inline-flex beats a "hidden" */}
+            {showLogin && (
+              <span className="ml-1.5 hidden xl:inline-flex">
+                <Link
+                  to="/login"
+                  viewTransition
+                  className={buttonClassName({
+                    pill: true,
+                    size: "sm",
+                    className: "ml-press h-10 px-5",
+                  })}
+                >
+                  <SignIn aria-hidden="true" weight="bold" className="size-4" />
+                  {t("nav.login")}
+                </Link>
+              </span>
+            )}
             <button
               type="button"
               aria-expanded={open}
@@ -214,11 +207,18 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
             ))}
           </ul>
           <div className="mt-auto flex flex-col gap-3 pt-4">
+            <a
+              href="tel:912"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-danger-bg px-4 font-semibold text-danger no-underline hover:bg-danger/15"
+            >
+              <Phone aria-hidden="true" weight="bold" className="size-4" />
+              {t("nav.strip.call")}
+            </a>
             {showLogin && (
               <Link
                 to="/login"
                 viewTransition
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-forest px-4 font-semibold text-on-forest no-underline hover:brightness-110"
+                className={buttonClassName({ pill: true, className: "min-h-12" })}
               >
                 <SignIn aria-hidden="true" weight="bold" className="size-4" />
                 {t("nav.login")}

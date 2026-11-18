@@ -43,6 +43,11 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     ],
   },
   workbox: {
+    // A new version takes over at once and the open page reloads (registerSW in main.tsx, auto
+    // update). vite-plugin-pwa sets these two only when it injects the registration itself; with
+    // injectRegister: false they must be explicit, or every update waits until all tabs close.
+    skipWaiting: true,
+    clientsClaim: true,
     globPatterns: ["**/*.{js,css,html,woff2,png,webp,ico}"],
     // The prerender script and React's server renderer run at build time only (vite.config.ts).
     globIgnores: [

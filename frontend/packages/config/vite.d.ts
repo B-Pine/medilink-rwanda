@@ -1,6 +1,8 @@
 import type { Plugin } from "vite";
 
 export declare const DEFAULT_API_BASE_URL: string;
+export declare const CLOUDINARY_UPLOAD: string;
+export declare const CLOUDINARY_DELIVERY: string;
 
 export interface AppEnv {
   apiBaseUrl: string;

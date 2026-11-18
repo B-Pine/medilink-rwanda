@@ -36,6 +36,7 @@ from medilink.core.exceptions import BusinessRuleViolation, RateLimited, error_r
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle, IPScopedRateThrottle
 from medilink.onboarding import notifications
+from medilink.onboarding.flags import staff_mfa_off
 from medilink.uploads.throttling import EnvRateThrottle
 
 security_logger = logging.getLogger("medilink.security")
@@ -99,7 +100,8 @@ class PinSerializer(serializers.Serializer):
 class StepUpSerializer(serializers.Serializer):
     method = serializers.ChoiceField(choices=["password_totp"])
     password = serializers.CharField(max_length=4096, trim_whitespace=False)
-    code = serializers.CharField(max_length=10)
+    # not needed while a platform admin has staff two-step sign-in off
+    code = serializers.CharField(max_length=10, required=False, allow_blank=True)
 
 
 class StepUpResultSerializer(serializers.Serializer):
@@ -294,8 +296,8 @@ class StepUpView(APIView):
         if wait:
             raise RateLimited(wait=wait)
         session = request.session
-        if user.check_password(body.validated_data["password"]) and verify_totp(
-            user, body.validated_data["code"]
+        if user.check_password(body.validated_data["password"]) and (
+            staff_mfa_off() or verify_totp(user, body.validated_data.get("code") or "")
         ):
             mfa_policy().reset(ident)
             session.pop(STEP_UP_FAILURES_KEY, None)

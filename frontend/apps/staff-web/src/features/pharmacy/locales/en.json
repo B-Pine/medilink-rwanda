@@ -139,7 +139,6 @@
     "noSubstitute": "No product with the same ingredient and strength in the catalogue.",
     "substituteReason": "Why you substitute",
     "controlled": "I checked the rules for controlled medicines",
-    "controlledHint": "Identity, quantity and the register entry.",
     "controlledRequired": "Confirm the controlled medicine check.",
     "controlledChecked": "controlled medicine checked",
     "chooseOne": "Choose what you give for at least one medicine.",
@@ -173,7 +172,6 @@
     "reason": "Addendum reason",
     "reasonRequired": "Give the reason.",
     "body": "Your answer",
-    "bodyHint": "Saved as a signed addendum on this consultation.",
     "bodyRequired": "Write the answer.",
     "answer": "Send the answer"
   },
@@ -249,8 +247,7 @@
     "cancelConsequences": "The pharmacy will not give it. The patient sees it as cancelled.",
     "changeTitle": "Change {{name}}?",
     "changeConsequences": "This one is cancelled with your reason, then you add the new one.",
-    "meal": "With food?",
-    "mealHint": "Shown as a picture on the label."
+    "meal": "With food?"
   },
   "pages": "Pages",
   "previous": "Previous",
@@ -267,7 +264,7 @@
     "dispensed_other": "Dispensed today ({{count}} by me)",
     "outOfStock": "Medicines out of stock",
     "next": "Next to give",
-    "nothing": "No prescription waits. New ones appear here as doctors sign.",
+    "nothing": "No prescription waits.",
     "items_one": "{{count}} medicine",
     "items_other": "{{count}} medicines",
     "lowStock_one": "Low on stock ({{count}} batch expiring soon)",
@@ -317,7 +314,6 @@
     "issued": "Issued on",
     "validUntil": "Valid until",
     "born": "Patient's date of birth",
-    "bornHint": "Opens the medicines; protects the patient's privacy.",
     "open": "Show medicines",
     "bornWrong": "The date of birth does not match."
   },
@@ -353,7 +349,6 @@
     },
     "expired": "Expired",
     "expiringNone": "No batch expires in the next 60 days.",
-    "expiringIntro": "Batches with units left that expire within 60 days, expired ones first. Give these first, or take expired ones off the shelf.",
     "columns": {
       "medicine": "Medicine",
       "batch": "Batch",

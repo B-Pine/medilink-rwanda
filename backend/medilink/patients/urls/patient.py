@@ -8,6 +8,11 @@ urlpatterns = [
     path("profiles/", v.ProfileListView.as_view(), name="patient-profiles"),
     path("profiles/<uuid:patient_id>/", v.ProfileDetailView.as_view(), name="patient-profile"),
     path(
+        "profiles/<uuid:patient_id>/avatar/",
+        v.ProfileAvatarView.as_view(),
+        name="patient-profile-avatar",
+    ),
+    path(
         "profiles/<uuid:patient_id>/photo/",
         v.ProfilePhotoView.as_view(),
         name="patient-profile-photo",

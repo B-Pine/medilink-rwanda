@@ -244,7 +244,8 @@
       "overview": "Overview",
       "licences": "Licences",
       "history": "History",
-      "flags": "Feature flags"
+      "flags": "Feature flags",
+      "staff": "Staff"
     },
     "actions": {
       "start-setup": "Start setup",
@@ -261,7 +262,6 @@
       "deactivate": "{{name}} becomes read-only. This is final."
     },
     "identifiers": "Government identifiers",
-    "identifiersHint": "The Ministry of Health facility code (FOSA ID) and the RRA tax number. They appear in the facility list for the government.",
     "saveIdentifiers": "Save",
     "identifiersSaved": "Saved.",
     "noCode": "No FOSA ID yet",
@@ -280,7 +280,40 @@
     "photos": "Photos",
     "identity": "Identity",
     "contact": "Contact and place",
-    "professionUnknown": "Profession not given"
+    "professionUnknown": "Profession not given",
+    "noAdminFilter": "No facility admin",
+    "attention": "Needs attention:",
+    "attentionItems": {
+      "noAdmin_one": "{{count}} without a facility admin",
+      "noAdmin_other": "{{count}} without a facility admin",
+      "expired_one": "{{count}} licence expired",
+      "expired_other": "{{count}} licences expired",
+      "expiring_one": "{{count}} licence expiring",
+      "expiring_other": "{{count}} licences expiring",
+      "missingCode_one": "{{count}} without a FOSA ID",
+      "missingCode_other": "{{count}} without a FOSA ID"
+    },
+    "edit": "Edit details",
+    "more": "More actions",
+    "noAdminAlert": "Nobody can run this facility: it has no active facility admin. Invite one from the Staff tab.",
+    "staffTitle": "People with access",
+    "invite": "Invite",
+    "noStaff": "Nobody has access yet.",
+    "twoStepOn": "Two-step on",
+    "twoStepOff": "Two-step off",
+    "removed": "Access removed",
+    "pending_one": "{{count}} pending invitation",
+    "pending_other": "{{count}} pending invitations",
+    "expires": "Expires {{when}}",
+    "cancelInvite": "Cancel",
+    "inviteTitle": "Invite someone to {{name}}",
+    "cancel": "Cancel",
+    "sendInvite": "Send invitation",
+    "fullName": "Full name",
+    "roles": "Roles",
+    "editTitle": "Edit facility details",
+    "saveDetails": "Save changes",
+    "slugFixed": "The web address stays {{slug}}: links people already have keep working."
   },
   "licences": {
     "add": "Add licence",
@@ -300,7 +333,8 @@
   "flags": {
     "title": "Feature flags",
     "names": {
-      "security.pin_unlock": "PIN unlock"
+      "security.pin_unlock": "PIN unlock",
+      "security.staff_mfa": "Staff two-step sign-in"
     },
     "on": "On",
     "off": "Off",
@@ -310,7 +344,8 @@
     "overridden": "Set for this facility.",
     "useDefault": "Use the default",
     "overrides_one": "{{count}} facility has its own setting",
-    "overrides_other": "{{count}} facilities have their own setting"
+    "overrides_other": "{{count}} facilities have their own setting",
+    "staffMfaOff": "Two-step sign-in is off: staff sign in with a password only. Turn it back on when testing is done."
   },
   "masterData": {
     "title": "Master data",
@@ -417,7 +452,6 @@
     "errorLine": "Line {{line}} ({{field}}): {{message}}",
     "samples": "Examples of changes",
     "confirm": "Apply the changes",
-    "descriptionHint": "What the service is, in plain words. Shown on the public service page.",
     "level": "Level",
     "parent": "Parent code"
   },
@@ -437,7 +471,6 @@
     "phone": "Phone",
     "email": "Email",
     "location": "Location",
-    "locationHint": "The village, the street address and the entrance on the map (patients use it for directions).",
     "address": "Street address",
     "mapLabel": "Map: tap to place the facility",
     "pinLabel": "Facility entrance (drag to move)",
@@ -451,7 +484,6 @@
       "village": "Village"
     },
     "applicant": "Applicant",
-    "applicantHint": "The person who speaks for the facility. They receive the link.",
     "name": "Full name",
     "position": "Position",
     "admin": "Facility admin",

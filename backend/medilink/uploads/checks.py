@@ -1,5 +1,5 @@
 """Deploy checks for the upload pipeline (contract §2.4): no fake scanner, no local storage,
-https download links and an explicit S3 region."""
+https download links and an explicit S3 region, or Cloudinary credentials."""
 
 from __future__ import annotations
 
@@ -21,10 +21,23 @@ def check_deploy_uploads(app_configs: Any = None, **kwargs: Any) -> list[CheckMe
                 id="medilink.uploads.E001",
             )
         )
-    if conf.storage != "s3":
+    if conf.storage == "cloudinary":
+        from django.conf import settings
+
+        cfg = getattr(settings, "CLOUDINARY", {}) or {}
+        trio = all(cfg.get(k) for k in ("cloud_name", "api_key", "api_secret"))
+        if not conf.cloudinary_url and not trio:
+            messages.append(
+                Error(
+                    "Cloudinary storage needs CLOUDINARY_URL or the CLOUDINARY_* credentials.",
+                    id="medilink.uploads.E005",
+                )
+            )
+    elif conf.storage != "s3":
         messages.append(
             Error(
-                "UPLOADS_STORAGE must be 's3' in deployments (local storage is for development).",
+                "UPLOADS_STORAGE must be 's3' or 'cloudinary' in deployments (local storage is "
+                "for development).",
                 id="medilink.uploads.E002",
             )
         )

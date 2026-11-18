@@ -79,7 +79,7 @@ export function PrivacyPage() {
               <div className="flex flex-col divide-y divide-border">
                 {managed.map((p) => (
                   <div key={p.patient_id} className="flex items-center gap-4 px-5 py-4">
-                    <Avatar name={p.display_name} />
+                    <Avatar name={p.display_name} src={p.avatar_url} />
                     <div className="min-w-0 flex-1">
                       <SwitchField
                         label={`${p.display_name} (${label(p.relationship)})`}

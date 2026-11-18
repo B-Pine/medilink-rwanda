@@ -635,6 +635,76 @@ export const consoleMocks: FeatureMockFactory = (context) => {
       if (body.preferred_language) user.preferred_language = body.preferred_language;
       return HttpResponse.json(detail(user));
     }),
+    http.post(`${PL}/users/:id/facilities/:facilityId/roles/`, async ({ request, params }) => {
+      const body = (await request.clone().json()) as { role_codes?: string[] };
+      const done = await audited(request, params.id, "platform.user.roles_changed");
+      if ("error" in done) return done.error;
+      const { user } = done;
+      const membership = user.facilities.find((f) => f.facility_id === params.facilityId);
+      if (!membership) return context.errorResponse(404, "not_found", "Not found.");
+      const roles = [...new Set(body.role_codes ?? [])];
+      if (!roles.length) {
+        user.changes.shift();
+        return context.errorResponse(400, "validation_error", "Choose at least one role.", {
+          fields: { role_codes: ["Choose at least one role."] },
+        });
+      }
+      const otherAdmins = db.users.filter(
+        (u) =>
+          u.id !== user.id &&
+          u.facilities.some(
+            (f) =>
+              f.facility_id === membership.facility_id &&
+              f.is_active &&
+              f.roles.includes("facility_admin"),
+          ),
+      );
+      if (
+        !roles.includes("facility_admin") &&
+        membership.roles.includes("facility_admin") &&
+        !otherAdmins.length
+      ) {
+        user.changes.shift();
+        return context.errorResponse(
+          422,
+          "business_rule_violation",
+          "The facility needs at least one active facility admin.",
+        );
+      }
+      membership.roles = roles;
+      user.changes[0]!.facility_name = membership.facility_name;
+      return HttpResponse.json(detail(user));
+    }),
+    http.post(`${PL}/users/:id/platform-admin/:team/`, async ({ request, params }) => {
+      const grant = params.team === "grant";
+      const target = db.users.find((u) => u.id === params.id);
+      if (target && grant && target.kind === "patient")
+        return context.errorResponse(
+          422,
+          "business_rule_violation",
+          "This is a patient account. Invite a separate staff account instead.",
+        );
+      if (
+        target &&
+        !grant &&
+        db.users.filter((u) => u.kind === "platform" && u.is_active && u.id !== target.id)
+          .length === 0
+      )
+        return context.errorResponse(
+          422,
+          "business_rule_violation",
+          "The platform needs at least one platform admin.",
+        );
+      const done = await audited(
+        request,
+        params.id,
+        grant ? "platform.user.platform_admin_granted" : "platform.user.platform_admin_revoked",
+      );
+      if ("error" in done) return done.error;
+      const { user } = done;
+      user.kind = grant ? "platform" : user.facilities.length ? "staff" : "staff";
+      return HttpResponse.json(detail(user));
+    }),
     http.post(`${PL}/users/:id/facilities/:facilityId/:access/`, async ({ request, params }) => {
       const done = await audited(
         request,

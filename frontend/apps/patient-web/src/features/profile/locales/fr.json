@@ -24,7 +24,14 @@
     "change": "Changer la photo",
     "remove": "Supprimer",
     "alt": "Photo de {{name}}",
-    "tooBig": "Choisissez une photo de moins de 5 Mo."
+    "uploading": "Envoi… {{percent}} %",
+    "errors": {
+      "type": "Utilisez une photo JPG, PNG, WebP ou HEIC.",
+      "size": "Choisissez une photo de moins de 8 Mo.",
+      "upload": "L'envoi n'a pas abouti. Réessayez.",
+      "network": "La connexion a été coupée pendant l'envoi. Réessayez.",
+      "unavailable": "L'envoi de photos n'est pas encore configuré sur le serveur. Réessayez plus tard."
+    }
   },
   "sections": {
     "details": "Mes informations",

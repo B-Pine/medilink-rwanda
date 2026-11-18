@@ -156,7 +156,7 @@
     "name": "Izina",
     "type": "Ubwoko",
     "status": "Imiterere",
-    "platformManaged": "Izina, ubwoko n'urwego rw'ubuvuzi biva ku busabe bwanyu bwemejwe. Saba ubufasha bwa MediLink kubihindura.",
+    "platformManaged": "Saba ubufasha bwa MediLink kugira ngo bihindurwe.",
     "contact": "Aho mubarizwa",
     "phone": "Telefoni",
     "email": "Imeyili",
@@ -169,10 +169,9 @@
     "locationUnavailable": "Aho uri ntihaboneka. Andika imibare y'ahantu.",
     "outsideRwanda": "Iyi mibare iri hanze y'u Rwanda. Yigenzure.",
     "description": "Ibisobanuro",
-    "descriptionHint": "Interuro nke muri buri rurimi: ibyo muvura n'uko babageraho.",
     "photos": "Amafoto",
-    "photosHint_one": "Ifoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu.",
-    "photosHint_other": "Amafoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu.",
+    "photosHint_one": "{{count}} kuri 6. Iya mbere ni yo igaragara imbere.",
+    "photosHint_other": "{{count}} kuri 6. Iya mbere ni yo igaragara imbere.",
     "addPhoto": "Ongeraho ifoto",
     "photoN": "Ifoto ya {{n}}",
     "removePhotoN": "Kuraho ifoto ya {{n}}",
@@ -188,7 +187,12 @@
     "cover": "Ifoto nyamukuru",
     "emergencyTitle": "Ubutabazi bwihuse",
     "emergency": "Serivisi y'ubutabazi bwihuse amasaha 24",
-    "emergencyHint": "Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi."
+    "emergencyHint": "Gusa niba mwakira indembe amanywa n'ijoro.",
+    "uploading": "Birimo koherezwa… {{percent}}%",
+    "logo": "Ikirango",
+    "addLogo": "Shyiraho ikirango",
+    "changeLogo": "Hindura ikirango",
+    "removeLogo": "Kuraho ikirango"
   },
   "catalogue": {
     "services": "Serivisi",
@@ -257,11 +261,9 @@
     "closed": "Harafunze",
     "save": "Bika amasaha",
     "preview": "Ibyumweru bine biri imbere",
-    "previewHint": "Amasaha ukuyemo iminsi ifunze, iminsi mikuru n'Umuganda.",
     "legendOpen": "Harafunguye",
     "umuganda": "Umuganda",
     "events": "Iminsi ifunze n'iminsi idasanzwe",
-    "eventsHint": "Impinduka z'igihe gito ku masaha y'icyumweru.",
     "addEvent": "Ongeraho umunsi ufunze cyangwa udasanzwe",
     "noEventsTitle": "Nta munsi ufunze uteganyijwe",
     "noEvents": "Ongeraho umunsi ufunze w'amahugurwa, w'ibarura cyangwa umunsi mukuru mudakora.",
@@ -300,7 +302,6 @@
     "slot": "Iminota ya buri gahunda",
     "capacity": "Abarwayi kuri buri gahunda",
     "share": "Igice cya interineti %",
-    "shareHint": "Igisigaye ni icy'abaje batafashe gahunda",
     "overlap": "Ibi bihurirana n'ikindi gihe cy'uyu muganga.",
     "unattestedTitle": "Uruhushya ntirurahamywa",
     "unattested": "Banza uhamye uruhushya rw'uyu muganga mbere yo kongeraho ibihe.",
@@ -404,7 +405,6 @@
       "branding": "Umutwe w'impapuro"
     },
     "range": "Kuva kuri {{min}} kugeza {{max}}",
-    "billingStepUp": "Impinduka zo kwishyuza zigusaba kwemeza ko ari wowe.",
     "choices": {
       "daily": "Buri munsi",
       "never": "Nta na rimwe"
@@ -439,7 +439,6 @@
         "sms_enabled": "Kohereza SMS zibutsa"
       }
     },
-    "brandingHint": "Amagambo yo hasi acapwa ku nyemezabwishyu, impapuro z'imiti n'amabaruwa.",
     "footer": "Amagambo yo hasi"
   },
   "history": {
@@ -599,14 +598,12 @@
   },
   "publicProfile": {
     "title": "Umwirondoro ugaragara",
-    "intro": "Ibyo abarwayi basoma kuri wowe ku mapaji y'ikigo n'aya muganga. Nomero y'uruhushya rwawe ntigaragara.",
     "visible": "Erekana umwirondoro wanjye abarwayi",
-    "visibleHint": "Bifunze: abarwayi babona izina ryawe n'iminsi ukora, nta nyandiko iri hepfo.",
     "on": "Biragaragara",
     "off": "Byahishwe",
     "bioLanguage": "Ururimi rw'inyandiko",
     "bio": "Ibyerekeye wowe",
-    "bioHint": "Hasigaye inyuguti {{count}}. Amagambo yoroshye: ibyo uvura, abo wakira, uko ukora.",
+    "bioHint": "Hasigaye inyuguti {{count}}.",
     "languages": "Indimi uvuga n'abarwayi",
     "spoken": {
       "rw": "Ikinyarwanda",
@@ -617,7 +614,11 @@
     "preview": "Ibyo abarwayi babona",
     "noBio": "Nta nyandiko iriho.",
     "hidden": "Byahishwe abarwayi.",
-    "needLicence": "Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira."
+    "needLicence": "Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira.",
+    "photo": "Ifoto",
+    "addPhoto": "Shyiraho ifoto",
+    "changePhoto": "Hindura ifoto",
+    "removePhoto": "Kuraho ifoto"
   },
   "account": {
     "menu": "Amakuru yanjye",
@@ -698,5 +699,12 @@
     "dentistry": "Amenyo",
     "public_health": "Ubuzima rusange",
     "other": "Ibindi"
+  },
+  "images": {
+    "type": "Koresha ifoto ya JPG, PNG, WebP cyangwa HEIC.",
+    "size": "Ifoto igomba kuba munsi ya MB 8.",
+    "upload": "Kohereza ntibyakunze. Ongera ugerageze.",
+    "network": "Umuyoboro wacitse mu gihe cyo kohereza. Ongera ugerageze.",
+    "unavailable": "Kohereza amafoto ntibirashyirwaho kuri iyi seriveri."
   }
 }

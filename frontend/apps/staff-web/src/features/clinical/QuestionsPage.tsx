@@ -90,7 +90,6 @@ function QuestionCard({ q }: { q: PharmacyQuestion }) {
         <div className="flex flex-col gap-3">
           <TextareaField
             label={t("clinical.questions.answer")}
-            hint={t("clinical.questions.answerHint")}
             rows={2}
             maxLength={2000}
             value={answer}

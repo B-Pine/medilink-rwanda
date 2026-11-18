@@ -101,3 +101,13 @@ def on_upload_scanned(sender: Any, file_id: Any, status: str, **kwargs: Any) -> 
     uploads.attach(
         file, purpose=PHOTO_PURPOSE, owner_id=patient.pk, patient_id=patient.pk, actor=None
     )
+
+
+def set_avatar(patient: Patient, public_id: str) -> bool:
+    """Cloudinary avatar (public id checked by the caller's serializer); "" removes it."""
+    if patient.avatar_public_id == public_id:
+        return False
+    patient.avatar_public_id = public_id
+    patient.version += 1
+    patient.save(update_fields=["avatar_public_id", "version", "updated_at"])
+    return True

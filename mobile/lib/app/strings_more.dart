@@ -11,6 +11,13 @@ extension MoreStrings on Strings {
 
 const _more = <String, Map<String, String>>{
   'en': {
+    // v1.2.1: search by insurance
+    "myInsurance": 'My insurance',
+    "insurerOnly": 'Only places that take {name}.',
+    "insurerAll": 'Places that take {name} come first.',
+    "insurerAllLink": 'Show the others too',
+    "insurerOnlyLink": 'Only those',
+
     // v1.1.2: bills, disputes, record and medicine details (patient dashboard parity)
     "bills": "Bills",
     "bills.empty": "No bills",
@@ -335,6 +342,13 @@ const _more = <String, Map<String, String>>{
     'appearance.dark': 'Dark',
   },
   'rw': {
+    // v1.2.1: search by insurance
+    "myInsurance": 'Ubwishingizi bwanjye',
+    "insurerOnly": 'Ahakira {name} gusa.',
+    "insurerAll": 'Ahakira {name} haza mbere.',
+    "insurerAllLink": "Erekana n'ahandi",
+    "insurerOnlyLink": 'Aho gusa',
+
     // v1.1.2: bills, disputes, record and medicine details (patient dashboard parity)
     "bills": "Inyemezabuguzi",
     "bills.empty": "Nta nyemezabuguzi",
@@ -660,6 +674,13 @@ const _more = <String, Map<String, String>>{
   },
   // French: the website's wording where it exists; the rest needs a native-speaker review.
   'fr': {
+    // v1.2.1: search by insurance
+    "myInsurance": 'Mon assurance',
+    "insurerOnly": 'Seulement les lieux qui acceptent {name}.',
+    "insurerAll": 'Les lieux qui acceptent {name} d’abord.',
+    "insurerAllLink": 'Voir les autres aussi',
+    "insurerOnlyLink": 'Seulement ceux-là',
+
     // v1.1.2: bills, disputes, record and medicine details (patient dashboard parity)
     "bills": "Factures",
     "bills.empty": "Aucune facture",

@@ -45,7 +45,6 @@
     "redFlagAlert": "This may be an emergency. Tell the patient to come now or call 912.",
     "text": "Notes for the doctor",
     "phone": "Contact phone",
-    "phoneHint": "For reminders and changes. Leave empty to use the number on file.",
     "phoneInvalid": "Enter a Rwandan mobile number, for example 0788 123 456."
   },
   "review": {

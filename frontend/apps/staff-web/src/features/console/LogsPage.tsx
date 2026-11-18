@@ -141,10 +141,7 @@ function LogPage({ kind }: { kind: LogKind }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={t(`console.logs.${kind}.title`)}
-        description={t(`console.logs.${kind}.lead`)}
-      />
+      <PageHeader title={t(`console.logs.${kind}.title`)} />
       <DataTable
         caption={t(`console.logs.${kind}.title`)}
         columns={columns}

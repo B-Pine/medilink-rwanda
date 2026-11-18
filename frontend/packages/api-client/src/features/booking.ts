@@ -46,6 +46,10 @@ export interface FacilitySearchInput {
   /** Only facilities whose admin declares a 24-hour emergency department. */
   emergency?: boolean;
   page?: number;
+  /** Free text: a facility, place, service, or an insurer's name ("rama", "mutuelle"). */
+  q?: string;
+  /** With an insurer: only facilities that accept it (else they come after those that do). */
+  insured_only?: boolean;
 }
 
 export interface FacilityResult {
@@ -74,6 +78,8 @@ export interface FacilityResult {
   referral_hint: boolean;
   lat: number | null;
   lng: number | null;
+  /** The facility's own cover photo (Cloudinary); the card draws one without it. */
+  cover_url?: string | null;
 }
 
 /** Minutes a new arrival can expect to wait. */
@@ -86,6 +92,8 @@ export interface FacilitySearchPage {
   count: number;
   page: number;
   results: FacilityResult[];
+  /** The insurer the results were checked against (chosen, or typed in `q`). */
+  insurer_code?: string | null;
 }
 
 export interface PublicService {
@@ -120,8 +128,10 @@ export interface PublicFacility {
   /** Set by the facility admin; empty when not given. */
   email: string;
   website: string;
-  /** Stable public URLs of the admin's photos (each redirects to the image). */
+  /** Public photo URLs: Cloudinary images first, then scanned uploads (each redirects). */
   photos: string[];
+  /** The facility's logo on Cloudinary, when it has one. */
+  logo_url?: string | null;
   district: string;
   sector: string;
   lat: number | null;
@@ -140,6 +150,8 @@ export interface PublicFacility {
     specialty?: string;
     bio_i18n?: Partial<Record<"rw" | "en" | "fr", string>>;
     languages?: string[];
+    /** The doctor's photo on Cloudinary, when they set one. */
+    photo_url?: string | null;
   }[];
 }
 

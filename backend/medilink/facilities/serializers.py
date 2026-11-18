@@ -11,6 +11,7 @@ from medilink.accounts.models import SPECIALTIES, Council, Profession, Sex
 from medilink.accounts.serializers import StaffPhoneField, StrictSerializer
 from medilink.billing.models import TariffKind
 from medilink.facilities.models import CalendarEventKind, ServicePointKind, SexRestriction
+from medilink.images.fields import CloudinaryImageField
 from medilink.scheduling.models import ExceptionKind
 from medilink.tenancy.models import EmploymentType
 
@@ -41,6 +42,12 @@ class I18nField(serializers.JSONField):
 # ---- facility ------------------------------------------------------------------------------------
 
 
+class ImageSerializer(serializers.Serializer):
+    public_id = serializers.CharField()
+    url = serializers.URLField(allow_null=True)
+    thumb_url = serializers.URLField(allow_null=True)
+
+
 class FacilityProfileSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField()
@@ -56,6 +63,11 @@ class FacilityProfileSerializer(serializers.Serializer):
     latitude = serializers.DecimalField(max_digits=9, decimal_places=6, allow_null=True)
     longitude = serializers.DecimalField(max_digits=9, decimal_places=6, allow_null=True)
     photos = serializers.ListField(child=serializers.UUIDField())
+    # Cloudinary images (signed direct upload, then PATCH the public ids): photos come first
+    photo_public_ids = serializers.ListField(child=serializers.CharField())
+    photo_images = ImageSerializer(many=True)
+    logo_public_id = serializers.CharField(allow_blank=True)
+    logo_url = serializers.URLField(allow_null=True)
     level_of_care = serializers.CharField()
     emergency_department = serializers.BooleanField()
     version = serializers.IntegerField(help_text="Profile version: send it back with PATCH.")
@@ -80,8 +92,18 @@ class FacilityProfileUpdateSerializer(StrictSerializer):
     )
     level_of_care = serializers.CharField(max_length=40, required=False, allow_blank=True)
     emergency_department = serializers.BooleanField(required=False)
+    # public ids returned by Cloudinary after a signed upload (kind facility_photo / facility_logo)
+    photo_public_ids = serializers.ListField(
+        child=CloudinaryImageField("facility_photo", allow_blank=False),
+        required=False,
+        max_length=6,
+    )
+    logo_public_id = CloudinaryImageField("facility_logo", required=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        ids = attrs.get("photo_public_ids")
+        if ids is not None and len(set(ids)) != len(ids):
+            raise serializers.ValidationError({"photo_public_ids": [_("Each photo only once.")]})
         lat, lng = attrs.get("latitude"), attrs.get("longitude")
         if lat is not None and not (-2.9 <= float(lat) <= -1.0):
             raise serializers.ValidationError({"latitude": [_("This point is outside Rwanda.")]})
@@ -621,6 +643,14 @@ class ClinicianPublicProfileSerializer(StrictSerializer):
     )
     is_public = serializers.BooleanField(default=True)
     specialty = serializers.CharField(read_only=True)
+    # Cloudinary avatar (kind provider_avatar): the public id after the signed upload; "" clears
+    avatar_public_id = CloudinaryImageField("provider_avatar", required=False)
+    photo_url = serializers.SerializerMethodField()
+
+    def get_photo_url(self, obj: Any) -> str | None:
+        from medilink.images.services import image_url
+
+        return image_url(getattr(obj, "avatar_public_id", ""), w=320, h=320)
 
     def validate_bio_i18n(self, value: dict[str, str]) -> dict[str, str]:
         unknown = set(value) - {"rw", "en", "fr"}

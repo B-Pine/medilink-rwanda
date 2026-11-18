@@ -101,6 +101,8 @@ class Api {
 
   Future<Object?> patch(String path, Object body) => _send(() => _dio.patch<Object?>(path, data: body));
 
+  Future<Object?> put(String path, Object body) => _send(() => _dio.put<Object?>(path, data: body));
+
   Future<Object?> delete(String path) => _send(() => _dio.delete<Object?>(path));
 
   Map<String, Object?>? _clean(Map<String, Object?>? query) =>

@@ -65,6 +65,7 @@ def test_b2_staff_me_schema_matches_contract(schema: dict[str, Any]) -> None:
         "preferred_language",
         "is_platform_admin",
         "mfa_enabled",
+        "photo_url",  # own Cloudinary photo (images, 2026-11-18)
         "memberships",
         "active_facility_id",
         "permissions",
@@ -74,7 +75,13 @@ def test_b2_staff_me_schema_matches_contract(schema: dict[str, Any]) -> None:
     assert props["active_facility_id"].get("nullable") is True
     membership = _props(schema, "Membership")
     assert set(membership) == {"facility", "roles"}
-    assert set(_props(schema, "FacilitySummary")) == {"id", "name", "slug", "facility_type"}
+    assert set(_props(schema, "FacilitySummary")) == {
+        "id",
+        "name",
+        "slug",
+        "facility_type",
+        "logo_url",  # active facility's Cloudinary logo (images, 2026-11-18)
+    }
 
 
 def test_b2_patient_me_schema_matches_contract(schema: dict[str, Any]) -> None:
@@ -86,7 +93,12 @@ def test_b2_patient_me_schema_matches_contract(schema: dict[str, Any]) -> None:
         "email_verified",
         "profiles",
     }
-    assert set(_props(schema, "PatientProfile")) == {"patient_id", "display_name", "relationship"}
+    assert set(_props(schema, "PatientProfile")) == {
+        "patient_id",
+        "display_name",
+        "relationship",
+        "avatar_url",  # Cloudinary photo (images, 2026-11-18)
+    }
 
 
 def test_b2_login_result_schema_matches_contract(schema: dict[str, Any]) -> None:

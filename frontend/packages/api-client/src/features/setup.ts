@@ -2,6 +2,7 @@
  * S2 facility setup and staff (contract sprint-02 §3): facility profile, hours, calendar,
  * settings, checklist and go-live; catalogue; schedules; billing setup; staff and invitations.
  */
+import type { StoredImage } from "./images";
 import type { ApiClient } from "../client";
 import type { StaffLoginResult, StaffMe, Uuid } from "../types";
 
@@ -30,7 +31,13 @@ export interface FacilityProfile {
   village_code: string;
   latitude: string | null;
   longitude: string | null;
+  /** Scanned uploads (older photos); shown after the Cloudinary ones. */
   photos: Uuid[];
+  /** Cloudinary photos, in order (the first is the cover). */
+  photo_public_ids: string[];
+  photo_images: StoredImage[];
+  logo_public_id: string;
+  logo_url: string | null;
   level_of_care: string;
   /** Declared by the admin: shown on the public pages and first on /emergency. */
   emergency_department: boolean;
@@ -53,6 +60,8 @@ export type FacilityProfileUpdate = Partial<
     | "longitude"
     | "level_of_care"
     | "emergency_department"
+    | "photo_public_ids"
+    | "logo_public_id"
   >
 > & { version: number };
 
@@ -461,6 +470,9 @@ export interface ClinicianPublicProfile {
   languages: ("rw" | "en" | "fr" | "sw")[];
   is_public: boolean;
   specialty: string;
+  /** Cloudinary avatar: send the public id after the signed upload ("" removes it). */
+  avatar_public_id?: string;
+  photo_url?: string | null;
 }
 
 export interface InvitationLookup {
@@ -695,8 +707,9 @@ export function createSetupApi(client: ApiClient) {
     updateClinicianProfile: (body: Partial<ClinicianProfileInput>) =>
       patch<ClinicianProfile>(setupPaths.clinician, body),
     clinicianPublicProfile: () => client.get<ClinicianPublicProfile>(setupPaths.clinicianPublic),
-    updateClinicianPublicProfile: (body: Omit<ClinicianPublicProfile, "specialty">) =>
-      patch<ClinicianPublicProfile>(setupPaths.clinicianPublic, body),
+    updateClinicianPublicProfile: (
+      body: Partial<Omit<ClinicianPublicProfile, "specialty" | "photo_url">>,
+    ) => patch<ClinicianPublicProfile>(setupPaths.clinicianPublic, body),
     lookupInvitation: (token: string) =>
       client.post<InvitationLookup>(setupPaths.invitationLookup, { token }),
     /** New account: `{token, full_name?, password}` → `LoginResult`; the name defaults to the inviter's. */

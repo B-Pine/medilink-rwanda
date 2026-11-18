@@ -151,10 +151,8 @@
       "lastLogin": "Dernière connexion",
       "since": "Compte créé"
     },
-    "patientNote": "C’est un compte patient. MediLink n’affiche ici que le compte : le dossier du patient reste dans les établissements qui le soignent.",
     "access": {
       "title": "Accès aux établissements",
-      "lead": "Où cette personne travaille et ce qu’elle peut y faire. Les administrateurs d’établissement gèrent les rôles ; vous pouvez retirer ou rétablir l’accès.",
       "none": "Aucun accès à un établissement.",
       "active": "Actif",
       "removed": "Accès retiré",
@@ -162,7 +160,11 @@
       "remove": "Retirer l’accès",
       "restore": "Rétablir l’accès",
       "removeConfirm": "{{name}} ne pourra plus travailler à {{facility}}. Ses autres établissements et son compte ne changent pas.",
-      "restoreConfirm": "{{name}} pourra de nouveau travailler à {{facility}}, avec ses anciens rôles."
+      "restoreConfirm": "{{name}} pourra de nouveau travailler à {{facility}}, avec ses anciens rôles.",
+      "roles": "Changer les rôles",
+      "rolesTitle": "Rôles à {{facility}}",
+      "rolesLegend": "Rôles",
+      "saveRoles": "Enregistrer les rôles"
     },
     "invitations": "Invitations pas encore acceptées",
     "invited": "Envoyée {{sent}} · expire {{expires}}",
@@ -175,12 +177,11 @@
     "started": "Ouverte {{time}}",
     "events": "Événements de sécurité récents",
     "edit": "Corriger les informations",
-    "editLead": "Corrigez le nom, le téléphone professionnel ou la langue. L’adresse e-mail et le mot de passe ne se changent pas ici.",
     "fullName": "Nom complet",
     "phoneHint": "Un numéro mobile rwandais, par exemple 0788 123 456.",
     "save": "Enregistrer",
     "reason": "Motif",
-    "reasonHint": "Inscrit au journal d’audit. 5 caractères minimum.",
+    "reasonHint": "5 caractères au moins.",
     "actionsTitle": "Actions sur le compte",
     "actionsNote": "Chaque action vous demande de confirmer à nouveau votre identité et est enregistrée avec votre motif.",
     "notice": {
@@ -222,7 +223,16 @@
       "send-password-reset": "Envoyé à {{email}}. Demandez à la personne de vérifier sa boîte de réception et ses spams.",
       "resend-verification": "Envoyé à {{email}}. Demandez à la personne de vérifier sa boîte de réception et ses spams."
     },
-    "clinician": "Clinicien"
+    "clinician": "Clinicien",
+    "team": {
+      "title": "Équipe de la plateforme",
+      "member": "Cette personne gère la console MediLink : établissements, utilisateurs et journaux.",
+      "notMember": "Les administrateurs de la plateforme gèrent la console MediLink. N'ajoutez que des personnes qui travaillent pour MediLink.",
+      "grant": "Ajouter à l'équipe",
+      "revoke": "Retirer de l'équipe",
+      "grantConfirm": "{{name}} obtient un accès complet à la console MediLink. Connexion en deux étapes.",
+      "revokeConfirm": "{{name}} perd l'accès à la console et est déconnecté(e) partout."
+    }
   },
   "logs": {
     "event": "Événement",
@@ -257,12 +267,10 @@
     },
     "security": {
       "title": "Journal de sécurité",
-      "lead": "Sign-ins, two-step login, lockouts and admin actions on accounts.",
       "noun": "events"
     },
     "access": {
       "title": "Journal d’accès aux dossiers",
-      "lead": "Who opened which record, with the reason given. Records are shown by reference only.",
       "noun": "accesses"
     }
   },

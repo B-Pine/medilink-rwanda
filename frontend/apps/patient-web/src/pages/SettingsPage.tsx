@@ -25,7 +25,7 @@ import { Link, useNavigate } from "react-router";
 
 import { paths } from "../app/paths";
 import { useLogout, usePatientMe } from "../auth/queries";
-import { Avatar, PageHeader, panelClass } from "../features/dashboard/kit";
+import { Avatar, ownAvatar, PageHeader, panelClass } from "../features/dashboard/kit";
 import { ChangePasswordForm } from "./ChangePasswordForm";
 
 const SECTIONS = ["personal", "display", "privacy", "security", "alerts", "account"] as const;
@@ -113,7 +113,7 @@ export function SettingsPage() {
           <SettingsSection id="personal">
             {me && (
               <div className="flex items-center gap-4 px-5 py-4">
-                <Avatar name={me.full_name} size="lg" />
+                <Avatar name={me.full_name} src={ownAvatar(me)} size="lg" />
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="m-0 font-heading text-h3 font-bold text-fg">{me.full_name}</p>
                   <p className="m-0 flex flex-wrap items-center gap-2 text-body-sm break-all text-fg-secondary">

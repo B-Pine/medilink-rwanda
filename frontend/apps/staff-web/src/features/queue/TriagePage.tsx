@@ -76,7 +76,6 @@ export function TriagePage() {
             <PageHeading title={t("queue.triage.title")}>{t("queue.triage.title")}</PageHeading>
             <LiveBadge />
           </div>
-          <p className="m-0 text-fg-muted">{t("queue.triage.lead")}</p>
         </div>
       </header>
 

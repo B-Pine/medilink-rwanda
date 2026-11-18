@@ -1,6 +1,8 @@
 import { http, HttpResponse } from "msw";
 
 import type {
+  FacilityInvitationRow,
+  FacilityStaff,
   ApplicantApplication,
   ApplicationDocument,
   ApplicationEvent,
@@ -26,6 +28,7 @@ import {
   stepUpFailure,
   str,
 } from "./s1-common";
+import { STAFF_USERS } from "../data";
 import { MOCK_FACILITY_ADMIN_ID } from "./console";
 import { uploadStore } from "./uploads";
 
@@ -43,6 +46,8 @@ const TRANSITIONS: Record<string, [FacilityStatus[], FacilityStatus]> = {
   reactivate: [["suspended"], "live"],
   deactivate: [["approved", "setup", "live", "suspended"], "deactivated"],
 };
+/** Flags with one platform-wide value: no facility overrides (sign-in comes before a facility). */
+const PLATFORM_ONLY_FLAGS = new Set(["security.staff_mfa"]);
 const STEP_UP_ACTIONS = new Set(["go-live", "suspend", "reactivate", "deactivate"]);
 const REASON_ACTIONS = new Set(["suspend", "reactivate", "deactivate"]);
 
@@ -54,6 +59,7 @@ interface MockApplication {
 
 interface MockFacility {
   facility: PlatformFacility;
+  invitations?: FacilityInvitationRow[];
   licences: Licence[];
   events: StatusEvent[];
   keys: Set<string>;
@@ -329,6 +335,24 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         : null,
       licences: entry.licences.filter((lic) => !lic.superseded_at),
     };
+  }
+
+  /** The facility's people from the mock staff accounts, plus invitations sent here. */
+  function staffOf(entry: MockFacility): FacilityStaff {
+    const members = STAFF_USERS.filter((u) =>
+      u.memberships.some((m) => m.facility.id === entry.facility.id),
+    ).map((u) => ({
+      membership_id: u.id,
+      user_id: u.id,
+      name: u.full_name,
+      email: u.email,
+      roles: [...(u.memberships.find((m) => m.facility.id === entry.facility.id)?.roles ?? [])],
+      is_active: true,
+      mfa_enabled: u.mfa_enabled,
+      last_login: new Date(Date.now() - 5 * 3_600_000).toISOString(),
+      joined_at: "2026-09-15T12:00:00Z",
+    }));
+    return { members, invitations: entry.invitations ?? [] };
   }
 
   function facilityView(entry: MockFacility): PlatformFacility {
@@ -1078,14 +1102,142 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
       const q = (url.searchParams.get("q") ?? "").toLowerCase();
       const status = url.searchParams.get("status");
       const licenceState = url.searchParams.get("licence_state");
+      const noAdmin = url.searchParams.get("no_admin") === "true";
+      const missingCode = url.searchParams.get("missing_code") === "true";
       const rows = [...facilities.values()]
         .map(facilityView)
         .filter(
           (f) =>
-            (!status || f.status === status) && (!licenceState || f.licence_state === licenceState),
+            (!status || f.status === status) &&
+            (!licenceState || f.licence_state === licenceState) &&
+            (!noAdmin || !f.admins.length) &&
+            (!missingCode || !f.moh_facility_code),
         )
         .filter((f) => !q || f.name.toLowerCase().includes(q));
       return HttpResponse.json(page(rows, url));
+    }),
+
+    http.get(`${api}/platform/facilities/summary/`, async ({ request }) => {
+      await context.settle();
+      const admin = platformAdmin(context, lang(request));
+      if ("error" in admin) return admin.error;
+      const rows = [...facilities.values()].map(facilityView);
+      const open = rows.filter((r) => r.status !== "deactivated");
+      const by_status: Record<string, number> = {};
+      for (const r of rows) by_status[r.status] = (by_status[r.status] ?? 0) + 1;
+      return HttpResponse.json({
+        total: rows.length,
+        by_status,
+        no_admin: open.filter((r) => !r.admins.length).length,
+        licence_expiring: open.filter((r) => r.licence_state === "expiring").length,
+        licence_expired: open.filter((r) => r.licence_state === "expired").length,
+        licence_missing: open.filter((r) => r.licence_state === "missing").length,
+        missing_code: open.filter((r) => !r.moh_facility_code).length,
+      });
+    }),
+
+    http.get(`${api}/platform/facilities/:id/staff/`, async ({ request, params }) => {
+      await context.settle();
+      const l = lang(request);
+      const admin = platformAdmin(context, l);
+      if ("error" in admin) return admin.error;
+      const entry = facilities.get(str(params.id));
+      if (!entry) return notFound(l);
+      return HttpResponse.json(staffOf(entry));
+    }),
+
+    http.post(`${api}/platform/facilities/:id/invitations/`, async ({ request, params }) => {
+      await context.settle();
+      const l = lang(request);
+      const csrf = context.csrfFailure(request, l);
+      if (csrf) return csrf;
+      const admin = platformAdmin(context, l);
+      if ("error" in admin) return admin.error;
+      const stepUp = stepUpFailure(context, l);
+      if (stepUp) return stepUp;
+      const entry = facilities.get(str(params.id));
+      if (!entry) return notFound(l);
+      const body = await context.readJson(request);
+      const email = str(body.email).trim().toLowerCase();
+      const roles = Array.isArray(body.role_codes) ? body.role_codes.map(String) : [];
+      const errors: Record<string, string> = {};
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.email = "Enter a valid email address.";
+      if (!roles.length) errors.role_codes = "Choose at least one role.";
+      if (str(body.reason).trim().length < 5)
+        errors.reason = "Give a reason (5 characters or more).";
+      if (Object.keys(errors).length) return fieldError(context, l, errors);
+      const staff = staffOf(entry);
+      if (staff.members.some((m) => m.email === email && m.is_active))
+        return context.errorResponse(
+          409,
+          "conflict",
+          "This person already works at this facility.",
+          {
+            fields: { email: ["This person already works at this facility."] },
+          },
+        );
+      if (staff.invitations.some((i) => i.email === email))
+        return context.errorResponse(
+          409,
+          "conflict",
+          "There is already an invitation for this email.",
+          {
+            fields: { email: ["There is already an invitation for this email."] },
+          },
+        );
+      const created = new Date();
+      entry.invitations = [
+        {
+          id: crypto.randomUUID(),
+          email,
+          full_name: str(body.full_name).trim(),
+          role_codes: [...new Set(roles)].sort(),
+          status: "pending",
+          invited_by: "Ingabire Grace",
+          created_at: created.toISOString(),
+          expires_at: new Date(created.getTime() + 7 * 86_400_000).toISOString(),
+        },
+        ...(entry.invitations ?? []),
+      ];
+      return HttpResponse.json(staffOf(entry), { status: 201 });
+    }),
+
+    http.delete(
+      `${api}/platform/facilities/:id/invitations/:invitation/`,
+      async ({ request, params }) => {
+        await context.settle();
+        const l = lang(request);
+        const admin = platformAdmin(context, l);
+        if ("error" in admin) return admin.error;
+        const stepUp = stepUpFailure(context, l);
+        if (stepUp) return stepUp;
+        const entry = facilities.get(str(params.id));
+        if (!entry) return notFound(l);
+        entry.invitations = (entry.invitations ?? []).filter((i) => i.id !== params.invitation);
+        return HttpResponse.json(staffOf(entry));
+      },
+    ),
+
+    http.patch(`${api}/platform/facilities/:id/details/`, async ({ request, params }) => {
+      await context.settle();
+      const l = lang(request);
+      const csrf = context.csrfFailure(request, l);
+      if (csrf) return csrf;
+      const admin = platformAdmin(context, l);
+      if ("error" in admin) return admin.error;
+      const stepUp = stepUpFailure(context, l);
+      if (stepUp) return stepUp;
+      const entry = facilities.get(str(params.id));
+      if (!entry) return notFound(l);
+      const body = await context.readJson(request);
+      if (str(body.reason).trim().length < 5)
+        return fieldError(context, l, { reason: "Give a reason (5 characters or more)." });
+      if (body.name !== undefined && str(body.name).trim().length < 2)
+        return fieldError(context, l, { name: "Give the facility's name." });
+      const f = entry.facility as unknown as Record<string, unknown>;
+      for (const key of ["name", "facility_type", "ownership", "level_of_care"])
+        if (body[key] !== undefined) f[key] = key === "name" ? str(body[key]).trim() : body[key];
+      return HttpResponse.json(facilityDetail(entry));
     }),
 
     http.get(`${api}/platform/facilities/:id/`, async ({ request, params }) => {
@@ -1138,14 +1290,16 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         const overrides =
           context.featureFlags.overrides.get(entry.facility.id) ?? new Map<string, boolean>();
         return HttpResponse.json(
-          [...context.featureFlags.defaults.entries()].map(([code, on]) => ({
-            code,
-            is_enabled: overrides.get(code) ?? on,
-            source: overrides.has(code) ? "override" : "default",
-            note: "",
-            set_by: null,
-            updated_at: null,
-          })),
+          [...context.featureFlags.defaults.entries()]
+            .filter(([code]) => !PLATFORM_ONLY_FLAGS.has(code))
+            .map(([code, on]) => ({
+              code,
+              is_enabled: overrides.get(code) ?? on,
+              source: overrides.has(code) ? "override" : "default",
+              note: "",
+              set_by: null,
+              updated_at: null,
+            })),
         );
       }
       return notFound(l);
@@ -1256,7 +1410,11 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
       const stepUp = stepUpFailure(context, l);
       if (stepUp) return stepUp;
       const code = str(params.code);
-      if (!context.featureFlags.defaults.has(code) || !facilities.has(str(params.id)))
+      if (
+        !context.featureFlags.defaults.has(code) ||
+        PLATFORM_ONLY_FLAGS.has(code) ||
+        !facilities.has(str(params.id))
+      )
         return notFound(l);
       const body = await context.readJson(request);
       const overrides =

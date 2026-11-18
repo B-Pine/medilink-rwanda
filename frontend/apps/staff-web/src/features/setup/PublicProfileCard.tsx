@@ -1,4 +1,4 @@
-import type { ClinicianPublicProfile } from "@medilink/api-client";
+import { IMAGE_ACCEPT, type ClinicianPublicProfile } from "@medilink/api-client";
 import {
   Alert,
   Button,
@@ -9,12 +9,14 @@ import {
   TabsTrigger,
   TextareaField,
 } from "@medilink/ui";
-import { Eye, Globe } from "@phosphor-icons/react";
+import { Eye, Globe, Trash, UploadSimple, UserCircle } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { staffMeKey } from "../../auth/queries";
+import { imageErrorText, useImageUpload } from "./images";
 import { errorText } from "./shared";
 
 type Lang = "rw" | "en" | "fr";
@@ -36,6 +38,19 @@ function Form({ profile }: { profile: ClinicianPublicProfile }) {
       api.setup.updateClinicianPublicProfile({ bio_i18n: bio, languages, is_public: isPublic }),
     onSuccess: (data) => queryClient.setQueryData(key, data),
   });
+  const avatar = useImageUpload(api.images.staff, "provider_avatar");
+  const photo = useMutation({
+    // the photo saves on its own: the bio and languages above keep their unsaved edits
+    mutationFn: async (file: File | null) =>
+      api.setup.updateClinicianPublicProfile({
+        avatar_public_id: file ? await avatar.upload(file) : "",
+      }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(key, data);
+      void queryClient.invalidateQueries({ queryKey: staffMeKey }); // the user menu's photo
+    },
+  });
+  const photoUrl = photo.data?.photo_url ?? profile.photo_url ?? null;
   const toggle = (code: (typeof SPOKEN)[number]) =>
     setLanguages(
       languages.includes(code) ? languages.filter((l) => l !== code) : [...languages, code],
@@ -51,9 +66,62 @@ function Form({ profile }: { profile: ClinicianPublicProfile }) {
         }}
         className="flex flex-col gap-5"
       >
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-full bg-subtle ring-1 ring-border">
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt={t("setup.publicProfile.photo")}
+                className="block size-full object-cover"
+              />
+            ) : (
+              <UserCircle aria-hidden="true" className="size-10 text-fg-muted" />
+            )}
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <div>
+              <h3 className="m-0 text-body font-semibold">{t("setup.publicProfile.photo")}</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
+                <UploadSimple aria-hidden="true" className="size-5" />
+                {avatar.progress !== null
+                  ? t("setup.profile.uploading", { percent: avatar.progress })
+                  : photoUrl
+                    ? t("setup.publicProfile.changePhoto")
+                    : t("setup.publicProfile.addPhoto")}
+                <input
+                  type="file"
+                  accept={IMAGE_ACCEPT}
+                  className="sr-only"
+                  disabled={photo.isPending}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) photo.mutate(file);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              {photoUrl && (
+                <Button
+                  variant="ghost"
+                  onClick={() => photo.mutate(null)}
+                  disabled={photo.isPending}
+                >
+                  <Trash aria-hidden="true" />
+                  {t("setup.publicProfile.removePhoto")}
+                </Button>
+              )}
+            </div>
+            {photo.isError && (
+              <Alert tone="danger" role="alert">
+                {imageErrorText(photo.error, t, t("setup.failed"))}
+              </Alert>
+            )}
+          </div>
+        </div>
         <SwitchField
           label={t("setup.publicProfile.visible")}
-          hint={t("setup.publicProfile.visibleHint")}
           checked={isPublic}
           stateLabel={isPublic ? t("setup.publicProfile.on") : t("setup.publicProfile.off")}
           onCheckedChange={setIsPublic}
@@ -124,6 +192,13 @@ function Form({ profile }: { profile: ClinicianPublicProfile }) {
           <Eye aria-hidden="true" className="size-4" />
           {t("setup.publicProfile.preview")}
         </span>
+        {photoUrl && (
+          <img
+            src={photoUrl}
+            alt=""
+            className="size-14 rounded-full object-cover ring-1 ring-border"
+          />
+        )}
         {profile.specialty && <span className="font-semibold">{profile.specialty}</span>}
         <p className="m-0 text-body-sm whitespace-pre-line text-fg">
           {preview || t("setup.publicProfile.noBio")}
@@ -156,7 +231,6 @@ export function PublicProfileCard() {
         <h2 id="public-profile" className="m-0 font-heading text-h3 tracking-tight">
           {t("setup.publicProfile.title")}
         </h2>
-        <p className="m-0 text-body-sm text-fg-secondary">{t("setup.publicProfile.intro")}</p>
       </div>
       {profile.isPending ? null : profile.isError ? (
         <p className="m-0 text-body-sm text-fg-muted">{t("setup.publicProfile.needLicence")}</p>

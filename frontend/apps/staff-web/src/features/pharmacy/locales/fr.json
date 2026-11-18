@@ -139,7 +139,6 @@
     "noSubstitute": "Aucun produit avec le même principe actif et dosage au catalogue.",
     "substituteReason": "Pourquoi vous substituez",
     "controlled": "J'ai vérifié les règles des médicaments réglementés",
-    "controlledHint": "Identité, quantité et inscription au registre.",
     "controlledRequired": "Confirmez la vérification du médicament réglementé.",
     "controlledChecked": "médicament réglementé vérifié",
     "chooseOne": "Choisissez ce que vous délivrez pour au moins un médicament.",
@@ -173,7 +172,6 @@
     "reason": "Motif de l'addendum",
     "reasonRequired": "Indiquez le motif.",
     "body": "Votre réponse",
-    "bodyHint": "Enregistrée comme addendum signé sur cette consultation.",
     "bodyRequired": "Écrivez la réponse.",
     "answer": "Envoyer la réponse"
   },
@@ -249,8 +247,7 @@
     "cancelConsequences": "La pharmacie ne le délivrera pas. Le patient le voit comme annulé.",
     "changeTitle": "Modifier {{name}} ?",
     "changeConsequences": "Celui-ci est annulé avec votre motif, puis vous ajoutez le nouveau.",
-    "meal": "Avec le repas ?",
-    "mealHint": "Affiché en image sur l’étiquette."
+    "meal": "Avec le repas ?"
   },
   "pages": "Pages",
   "previous": "Précédent",
@@ -267,7 +264,7 @@
     "dispensed_other": "Délivrées aujourd’hui ({{count}} par moi)",
     "outOfStock": "Médicaments en rupture",
     "next": "Prochaines à délivrer",
-    "nothing": "Aucune ordonnance en attente. Les nouvelles arrivent ici dès que les médecins signent.",
+    "nothing": "Aucune ordonnance en attente.",
     "items_one": "{{count}} médicament",
     "items_other": "{{count}} médicaments",
     "lowStock_one": "Stock bas ({{count}} lot bientôt périmé)",
@@ -317,7 +314,6 @@
     "issued": "Émise le",
     "validUntil": "Valide jusqu’au",
     "born": "Date de naissance du patient",
-    "bornHint": "Ouvre les médicaments ; protège la vie privée du patient.",
     "open": "Voir les médicaments",
     "bornWrong": "La date de naissance ne correspond pas."
   },
@@ -353,7 +349,6 @@
     },
     "expired": "Périmé",
     "expiringNone": "Aucun lot ne périme dans les 60 prochains jours.",
-    "expiringIntro": "Lots avec des unités restantes qui périment dans les 60 jours, les périmés d'abord. Donnez-les en premier, ou retirez les périmés du rayon.",
     "columns": {
       "medicine": "Médicament",
       "batch": "Lot",

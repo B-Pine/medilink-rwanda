@@ -172,6 +172,9 @@ export interface PlatformFacility {
   latitude: number | null;
   longitude: number | null;
   photo_count: number;
+  /** The facility's own cover photo and logo (Cloudinary), when it has them. */
+  cover_url?: string | null;
+  logo_url?: string | null;
   location: FacilityPlace;
   /** The facility admins: who is in charge. */
   admins: FacilityContact[];
@@ -201,6 +204,54 @@ export interface Licence {
   verified_at: string | null;
   superseded_at: string | null;
   version: number;
+}
+
+/** Counts for the facility list's "needs attention" strip (deactivated facilities left out). */
+export interface FacilityAttention {
+  total: number;
+  by_status: Partial<Record<FacilityStatus, number>>;
+  no_admin: number;
+  licence_expiring: number;
+  licence_expired: number;
+  licence_missing: number;
+  missing_code: number;
+}
+
+export interface FacilityStaffMember {
+  membership_id: Uuid;
+  user_id: Uuid;
+  name: string;
+  email: string;
+  roles: string[];
+  is_active: boolean;
+  mfa_enabled: boolean;
+  last_login: string | null;
+  joined_at: string;
+}
+
+export interface FacilityInvitationRow {
+  id: Uuid;
+  email: string;
+  full_name: string;
+  role_codes: string[];
+  status: "pending";
+  invited_by: string;
+  created_at: string;
+  expires_at: string;
+}
+
+export interface FacilityStaff {
+  members: FacilityStaffMember[];
+  invitations: FacilityInvitationRow[];
+}
+
+/** Platform-managed facts a platform admin corrects (step-up, reason). */
+export interface FacilityDetailsUpdate {
+  name?: string;
+  facility_type?: string;
+  ownership?: string;
+  level_of_care?: "primary" | "secondary" | "tertiary";
+  reason: string;
 }
 
 export interface PlatformFacilityDetail extends PlatformFacility {
@@ -479,6 +530,29 @@ export function createOnboardingApi(client: ApiClient) {
       facilities: (params?: ListParams) =>
         client.get<Page<PlatformFacility>>(onboardingPaths.facilities + query(params)),
       facility: (id: Uuid) => client.get<PlatformFacilityDetail>(onboardingPaths.facility(id)),
+      facilitiesSummary: () =>
+        client.get<FacilityAttention>(`${onboardingPaths.facilities}summary/`),
+      facilityStaff: (id: Uuid) =>
+        client.get<FacilityStaff>(onboardingPaths.facilityAction(id, "staff")),
+      /** Invite someone to the facility, e.g. a new facility admin (step-up, reason). */
+      inviteToFacility: (
+        id: Uuid,
+        body: { email: string; full_name?: string; role_codes: string[]; reason: string },
+      ) => client.post<FacilityStaff>(onboardingPaths.facilityAction(id, "invitations"), body),
+      cancelFacilityInvitation: (id: Uuid, invitationId: Uuid) =>
+        client.request<FacilityStaff>(
+          "DELETE",
+          `${onboardingPaths.facilityAction(id, "invitations")}${invitationId}/`,
+        ),
+      /** Correct name, type, ownership or level of care (step-up, reason). */
+      updateFacilityDetails: (id: Uuid, body: FacilityDetailsUpdate) =>
+        client.request<PlatformFacilityDetail>(
+          "PATCH",
+          onboardingPaths.facilityAction(id, "details"),
+          {
+            body,
+          },
+        ),
       /** Set the MoH facility code (FOSA ID) and TIN (step-up). */
       updateFacilityIdentifiers: (id: Uuid, body: { moh_facility_code?: string; tin?: string }) =>
         client.request<PlatformFacilityDetail>("PATCH", onboardingPaths.facility(id), { body }),

@@ -5,6 +5,8 @@
 - `S3CompatibleStorage`: deployments (boto3, server-side encryption with SSE-S3 or, when
   UPLOADS_S3_SSE_KMS_KEY_ID is set, SSE-KMS; presigned GET on UPLOADS_DOWNLOAD_BASE_URL).
   `check --deploy` refuses local storage and a missing UPLOADS_S3_REGION.
+- `CloudinaryStorage` (medilink.uploads.cloudinary): deployments without S3; CLOUDINARY_URL,
+  authenticated raw assets, signed expiring download links.
 
 Every download is served as an attachment (security 06 §6): browsers never render a stored file
 in a page of their own, whatever disposition the client asks for. The viewer still shows images
@@ -257,4 +259,8 @@ def get_storage() -> ObjectStorage:
         return LocalFileSystemStorage(conf.local_root, conf.download_base_url)
     if conf.storage == "s3":
         return S3CompatibleStorage(conf)
+    if conf.storage == "cloudinary":
+        from medilink.uploads.cloudinary import CloudinaryStorage
+
+        return CloudinaryStorage(conf)
     raise ValueError(f"Unknown UPLOADS_STORAGE {conf.storage!r}")

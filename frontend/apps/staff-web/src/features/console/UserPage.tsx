@@ -15,8 +15,10 @@ import {
   LockKey,
   LockKeyOpen,
   PencilSimple,
+  ShieldCheck,
   ShieldSlash,
   SignOut,
+  UserGear,
   UserMinus,
   type Icon,
 } from "@phosphor-icons/react";
@@ -68,6 +70,8 @@ export function UserPage() {
 type Pending =
   | { kind: "action"; action: AccountAction }
   | { kind: "access"; membership: ConsoleMembership }
+  | { kind: "roles"; membership: ConsoleMembership }
+  | { kind: "team"; action: "grant" | "revoke" }
   | { kind: "edit" };
 
 function UserDetail() {
@@ -126,22 +130,24 @@ function UserDetail() {
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <AccountCard user={u} />
-          {u.kind === "patient" ? (
-            <Card padding="md">
-              <p className="m-0 text-body-sm text-fg-secondary">{t("console.users.patientNote")}</p>
-            </Card>
-          ) : (
+          {u.kind !== "patient" && (
             <AccessCard
               user={u}
               canAct={canAct}
               onChange={(membership) => setPending({ kind: "access", membership })}
+              onRoles={(membership) => setPending({ kind: "roles", membership })}
             />
           )}
           <ChangesCard changes={u.changes} />
           <ActivityCard user={u} />
         </div>
         {canAct && (
-          <ActionsCard user={u} onAct={(action) => setPending({ kind: "action", action })} />
+          <div className="flex flex-col gap-5">
+            <ActionsCard user={u} onAct={(action) => setPending({ kind: "action", action })} />
+            {u.kind !== "patient" && (
+              <TeamCard user={u} onAct={(action) => setPending({ kind: "team", action })} />
+            )}
+          </div>
         )}
       </div>
 
@@ -158,6 +164,19 @@ function UserDetail() {
               ? t(`console.users.done.${pending.action}`, { email: u.email })
               : undefined
           }
+          onClose={() => setPending(null)}
+        />
+      )}
+      {pending?.kind === "roles" && (
+        <RolesDialog user={u} membership={pending.membership} onClose={() => setPending(null)} />
+      )}
+      {pending?.kind === "team" && (
+        <ReasonDialog
+          title={t(`console.users.team.${pending.action}`)}
+          description={t(`console.users.team.${pending.action}Confirm`, { name: u.full_name })}
+          confirm={t(`console.users.team.${pending.action}`)}
+          danger={pending.action === "revoke"}
+          run={(reason) => api.console.platformTeam(u.id, pending.action, reason)}
           onClose={() => setPending(null)}
         />
       )}
@@ -352,10 +371,12 @@ function AccessCard({
   user,
   canAct,
   onChange,
+  onRoles,
 }: {
   user: ConsoleUserDetail;
   canAct: boolean;
   onChange: (membership: ConsoleMembership) => void;
+  onRoles: (membership: ConsoleMembership) => void;
 }) {
   const { t } = useTranslation();
   const dateTime = useDateTime();
@@ -367,7 +388,6 @@ function AccessCard({
         <SectionTitle count={user.facilities.length}>
           {t("console.users.access.title")}
         </SectionTitle>
-        <p className="m-0 text-body-sm text-fg-secondary">{t("console.users.access.lead")}</p>
       </div>
       {user.facilities.length === 0 ? (
         <p className="m-0 text-body-sm text-fg-muted">{t("console.users.access.none")}</p>
@@ -400,20 +420,34 @@ function AccessCard({
                 )}
               </span>
               {canAct && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => onChange(f)}
-                  iconStart={
-                    f.is_active ? (
-                      <UserMinus aria-hidden="true" className="size-4" />
-                    ) : (
-                      <ArrowCounterClockwise aria-hidden="true" className="size-4" />
-                    )
-                  }
-                >
-                  {t(f.is_active ? "console.users.access.remove" : "console.users.access.restore")}
-                </Button>
+                <span className="flex flex-wrap gap-2">
+                  {f.is_active && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => onRoles(f)}
+                      iconStart={<UserGear aria-hidden="true" className="size-4" />}
+                    >
+                      {t("console.users.access.roles")}
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => onChange(f)}
+                    iconStart={
+                      f.is_active ? (
+                        <UserMinus aria-hidden="true" className="size-4" />
+                      ) : (
+                        <ArrowCounterClockwise aria-hidden="true" className="size-4" />
+                      )
+                    }
+                  >
+                    {t(
+                      f.is_active ? "console.users.access.remove" : "console.users.access.restore",
+                    )}
+                  </Button>
+                </span>
               )}
             </li>
           ))}
@@ -590,6 +624,138 @@ function ActionsCard({
   );
 }
 
+/** The platform team: who runs the console. Never your own account, never the last admin. */
+function TeamCard({
+  user,
+  onAct,
+}: {
+  user: ConsoleUserDetail;
+  onAct: (action: "grant" | "revoke") => void;
+}) {
+  const { t } = useTranslation();
+  const member = user.kind === "platform";
+  return (
+    <Card as="section" padding="md" aria-labelledby="platform-team" className="flex flex-col gap-3">
+      <h2 id="platform-team" className="m-0 font-heading text-h4 font-bold">
+        {t("console.users.team.title")}
+      </h2>
+      <p className="m-0 text-body-sm text-fg-secondary">
+        {t(member ? "console.users.team.member" : "console.users.team.notMember")}
+      </p>
+      <Button
+        size="sm"
+        variant={member ? "danger" : "secondary"}
+        className="self-start"
+        onClick={() => onAct(member ? "revoke" : "grant")}
+        iconStart={
+          member ? (
+            <ShieldSlash aria-hidden="true" className="size-4" />
+          ) : (
+            <ShieldCheck aria-hidden="true" className="size-4" />
+          )
+        }
+      >
+        {t(member ? "console.users.team.revoke" : "console.users.team.grant")}
+      </Button>
+    </Card>
+  );
+}
+
+/** Set a person's roles at one facility (e.g. a new facility admin after the last one left). */
+function RolesDialog({
+  user,
+  membership,
+  onClose,
+}: {
+  user: ConsoleUserDetail;
+  membership: ConsoleMembership;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const [roles, setRoles] = useState<string[]>(membership.roles);
+  const [reason, setReason] = useState("");
+  const save = useMutation({
+    mutationFn: () =>
+      withStepUp(() => api.console.setRoles(user.id, membership.facility_id, roles, reason.trim())),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["console"] });
+      void queryClient.invalidateQueries({ queryKey: ["platform"] });
+      onClose();
+    },
+  });
+  const same =
+    roles.length === membership.roles.length && roles.every((r) => membership.roles.includes(r));
+  const ready = roles.length > 0 && !same && reason.trim().length >= 5;
+  return (
+    <Dialog
+      open
+      onOpenChange={(open) => !open && onClose()}
+      title={t("console.users.access.rolesTitle", { facility: membership.facility_name })}
+      closeLabel={t("console.close")}
+      footer={
+        <Button type="submit" form="roles-form" loading={save.isPending} disabled={!ready}>
+          {t("console.users.access.saveRoles")}
+        </Button>
+      }
+    >
+      <form
+        id="roles-form"
+        noValidate
+        className="flex flex-col gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (ready) save.mutate();
+        }}
+      >
+        {save.isError && (
+          <Alert tone="danger" role="alert">
+            {actionError(save.error, t("console.failed"))}
+          </Alert>
+        )}
+        <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+          <legend className="sr-only">{t("console.users.access.rolesLegend")}</legend>
+          <div className="flex flex-wrap gap-2">
+            {ROLE_CODES.map((code) => (
+              <button
+                key={code}
+                type="button"
+                aria-pressed={roles.includes(code)}
+                onClick={() =>
+                  setRoles(
+                    roles.includes(code) ? roles.filter((r) => r !== code) : [...roles, code],
+                  )
+                }
+                className="min-h-9 cursor-pointer rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary transition-colors hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+              >
+                {roleLabel(code, t)}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <TextField
+          label={t("console.users.reason")}
+          hint={t("console.users.reasonHint")}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </form>
+    </Dialog>
+  );
+}
+
+const ROLE_CODES: RoleCode[] = [
+  "facility_admin",
+  "doctor",
+  "receptionist",
+  "pharmacist",
+  "cashier",
+  "triage_nurse",
+  "lab_technician",
+];
+
 /** Confirm an action with a written reason (audit log) after re-confirming identity. */
 function ReasonDialog({
   title,
@@ -715,7 +881,6 @@ function EditDialog({ user, onClose }: { user: ConsoleUserDetail; onClose: () =>
       open
       onOpenChange={(open) => !open && onClose()}
       title={t("console.users.edit")}
-      description={t("console.users.editLead")}
       closeLabel={t("console.close")}
       footer={
         <Button

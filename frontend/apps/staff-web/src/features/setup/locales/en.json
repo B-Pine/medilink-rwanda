@@ -156,7 +156,7 @@
     "name": "Name",
     "type": "Type",
     "status": "Status",
-    "platformManaged": "Name, type and level of care come from your approved application. Ask MediLink support to change them.",
+    "platformManaged": "Ask MediLink support to change these.",
     "contact": "Contact",
     "phone": "Phone",
     "email": "Email",
@@ -169,10 +169,9 @@
     "locationUnavailable": "Your location is not available. Type the coordinates instead.",
     "outsideRwanda": "These coordinates are outside Rwanda. Check them.",
     "description": "Description",
-    "descriptionHint": "A few sentences in each language: what you treat and how to find you.",
     "photos": "Photos",
-    "photosHint_one": "{{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page.",
-    "photosHint_other": "{{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page.",
+    "photosHint_one": "{{count}} of 6. The first is the cover.",
+    "photosHint_other": "{{count}} of 6. The first is the cover.",
     "addPhoto": "Add photo",
     "photoN": "Photo {{n}}",
     "removePhotoN": "Remove photo {{n}}",
@@ -188,7 +187,12 @@
     "cover": "Cover",
     "emergencyTitle": "Emergency care",
     "emergency": "24-hour emergency department",
-    "emergencyHint": "Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page."
+    "emergencyHint": "Only if you receive emergencies day and night.",
+    "uploading": "Uploading… {{percent}}%",
+    "logo": "Logo",
+    "addLogo": "Upload logo",
+    "changeLogo": "Change logo",
+    "removeLogo": "Remove logo"
   },
   "catalogue": {
     "services": "Services",
@@ -257,11 +261,9 @@
     "closed": "Closed",
     "save": "Save hours",
     "preview": "Next four weeks",
-    "previewHint": "Hours minus closures, public holidays and Umuganda.",
     "legendOpen": "Open",
     "umuganda": "Umuganda",
     "events": "Closures and special days",
-    "eventsHint": "One-off changes to the weekly hours.",
     "addEvent": "Add closure or special day",
     "noEventsTitle": "No closures planned",
     "noEvents": "Add a closure for a training day, an inventory day or a holiday you do not open on.",
@@ -300,7 +302,6 @@
     "slot": "Slot minutes",
     "capacity": "Patients per slot",
     "share": "Online share %",
-    "shareHint": "The rest stays for walk-ins",
     "overlap": "This overlaps another session of the same doctor.",
     "unattestedTitle": "Licence not attested yet",
     "unattested": "Attest this doctor's licence before adding sessions.",
@@ -404,7 +405,6 @@
       "branding": "Letterhead"
     },
     "range": "From {{min}} to {{max}}",
-    "billingStepUp": "Billing changes ask you to confirm it is you.",
     "choices": {
       "daily": "Every day",
       "never": "Never"
@@ -439,7 +439,6 @@
         "sms_enabled": "Send SMS reminders"
       }
     },
-    "brandingHint": "The footer printed on receipts, prescriptions and letters.",
     "footer": "Footer text"
   },
   "history": {
@@ -599,14 +598,12 @@
   },
   "publicProfile": {
     "title": "Public profile",
-    "intro": "What patients read about you on the facility and doctor pages. Your licence number is never shown.",
     "visible": "Show my profile to patients",
-    "visibleHint": "Off: patients still see your name and days, without the text below.",
     "on": "Shown",
     "off": "Hidden",
     "bioLanguage": "Language of the text",
     "bio": "About you",
-    "bioHint": "{{count}} characters left. Plain words: what you treat, who you see, how you work.",
+    "bioHint": "{{count}} characters left.",
     "languages": "Languages you speak with patients",
     "spoken": {
       "rw": "Kinyarwanda",
@@ -617,7 +614,11 @@
     "preview": "What patients see",
     "noBio": "No text yet.",
     "hidden": "Hidden from patients.",
-    "needLicence": "Save your licence first; the public profile follows."
+    "needLicence": "Save your licence first; the public profile follows.",
+    "photo": "Photo",
+    "addPhoto": "Upload photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo"
   },
   "account": {
     "menu": "My details",
@@ -698,5 +699,12 @@
     "dentistry": "Dentistry",
     "public_health": "Public health",
     "other": "Other"
+  },
+  "images": {
+    "type": "Use a JPG, PNG, WebP or HEIC image.",
+    "size": "The image must be under 8 MB.",
+    "upload": "The upload didn't work. Try again.",
+    "network": "The connection dropped during the upload. Try again.",
+    "unavailable": "Photo uploads aren't set up on this server yet."
   }
 }

@@ -30,7 +30,9 @@
     "code": "Authenticator code",
     "codeHint": "6 digits from your authenticator app",
     "confirm": "Confirm",
-    "required": "Enter your password and the code."
+    "required": "Enter your password and the code.",
+    "descriptionPassword": "This action needs your password.",
+    "requiredPassword": "Enter your password."
   },
   "security": {
     "title": "Security",

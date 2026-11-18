@@ -8,6 +8,71 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Search by insurance (2026-11-18)
+
+- Added: facility search takes `q` (name, sector, district, type, service) and `insured_only`. An
+  insurer named in `q` in any language (mutuelle, mituweli, cbhi, rama, rssb, mmi, military,
+  private, privé) becomes the insurer filter and narrows to places that take it; places that take
+  the chosen insurer always come first. The page echoes `insurer_code`.
+
+### Platform management of facilities and people (2026-11-18)
+
+- Fixed: facility photos didn't show on the public search cards. The listing's cover is now the
+  first Cloudinary photo, else the first clean scanned photo (`cover_url` may be the public photo
+  path on this host); saving or removing photos rebuilds that facility's listing at once instead of
+  waiting for the background refresh. New `manage.py refresh_listing` rebuilds every live facility
+  now.
+
+- Added: `GET /api/v1/platform/facilities/summary/` (counts by status, without a facility admin,
+  licences expiring, expired or missing, without a FOSA ID) and the list filter `no_admin=true`;
+  facility rows give `cover_url` and `logo_url`.
+- Added: `GET /platform/facilities/{id}/staff/` (everyone with access, active or removed, with
+  roles, two-step state and last sign-in, plus pending invitations);
+  `POST /platform/facilities/{id}/invitations/` (invite by email with roles; step-up and a reason;
+  audit `facility.staff_invited`) and `DELETE .../invitations/{invitation_id}/`.
+- Added: `PATCH /platform/facilities/{id}/details/` corrects the platform-managed facts (name,
+  type, ownership, level of care; never the slug); step-up and a reason; audit
+  `facility.details_updated` (field names only); the public listing is rebuilt.
+- Added: `POST /platform/users/{id}/facilities/{facility_id}/roles/` sets a person's roles at a
+  facility (step-up, reason, the facility keeps one active facility admin; audit
+  `platform.user.roles_changed`), and `POST /platform/users/{id}/platform-admin/{grant|revoke}/`
+  (step-up, reason; never yourself, never the last platform admin, never a patient account;
+  revoking ends the person's sessions; audit `platform.user.platform_admin_granted` / `_revoked`).
+
+### Images on Cloudinary and the staff two-step switch (2026-11-18)
+
+- Added: `medilink.images`: signed direct image uploads to Cloudinary (official `cloudinary` SDK,
+  new dependency). `POST /api/v1/staff/uploads/signature/` (kinds `facility_photo` and
+  `facility_logo` need `facility.configure`; `provider_avatar` any staff) and
+  `POST /api/v1/patient/uploads/signature/` (`patient_avatar`); 503 `uploads_unavailable` without
+  credentials, throttle 30/hour (`THROTTLE_RATE_UPLOAD_SIGNATURE`). Settings `CLOUDINARY_CLOUD_NAME`,
+  `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `CLOUDINARY_UPLOAD_PRESET`,
+  `CLOUDINARY_ROOT_FOLDER`; deploy check `medilink.images.E001` wants all three credentials.
+- Added: public ids are checked with the Admin API (the asset exists and sits in the kind's
+  folder) and only they are stored: facility `photo_public_ids` (up to 6 with the scanned photos)
+  and `logo_public_id` on `PATCH /staff/facility/` (migration `facilities.0006`), the doctor's
+  `avatar_public_id` on `PATCH /staff/clinician-profile/public/` (`accounts.0011`; a PATCH with the
+  photo changes only what it sends), the patient's photo on `PUT`/`DELETE
+  /patient/profiles/{id}/avatar/` (`patients.0007`). Delivery URLs are built when read:
+  `photo_images`, `logo_url`, `photo_url`, `avatar_url`; the public facility profile lists the
+  Cloudinary photos first and gives `logo_url` and each doctor's `photo_url`; search results give
+  `cover_url` (listing column, `facilities.0007`); StaffMe gives `photo_url` and the active
+  facility's `logo_url`; PatientMe and profile summaries give `avatar_url`.
+- Added: `UPLOADS_STORAGE=cloudinary`: the scanned upload pipeline can keep its files on Cloudinary
+  as private (authenticated) raw assets with signed, expiring download links (`CLOUDINARY_URL` or
+  the credentials above).
+- Fixed: a Cloudinary error while checking an uploaded photo (credentials, rate limit, outage)
+  answered 500; it is now a field error ("Try again in a moment") and is logged with Cloudinary's
+  message. `CLOUDINARY_URL` fills the `CLOUDINARY_*` credentials left empty. New
+  `manage.py cloudinary_check` (credentials, API reachable, preset signed).
+- Added: Sign in with Google brings the Google profile photo (`picture`, only from
+  `*.googleusercontent.com`, asked at 400 px): after the sign-in commits, a Celery task copies it
+  to Cloudinary (patient avatars folder) and sets it as the patient's own photo, only while they
+  have none; a failure never affects the sign-in.
+- Added: feature flag `security.staff_mfa` (on, platform-wide, no facility overrides, migration
+  `onboarding.0004`). A platform admin can turn it off for testing: staff then sign in and step up
+  with the password alone; the login audit entry says `mfa_method: off_by_admin`.
+
 ### API image vulnerabilities (2026-11-07, #106)
 
 - Fixed: the runtime image no longer carries pip (its vendored msgpack, urllib3 and setuptools had

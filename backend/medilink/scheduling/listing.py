@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import datetime as dt
 import math
+import re
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
@@ -19,6 +20,7 @@ from medilink.billing.models import InsurerRule
 from medilink.billing.services import current_q, price
 from medilink.facilities.calendar import KIGALI, effective_calendar
 from medilink.facilities.models import Profile, PublicListing, Service
+from medilink.images.services import image_url
 from medilink.masterdata.models import Location, LocationLevel
 from medilink.scheduling.booking import cover
 from medilink.scheduling.slots import bookable
@@ -144,6 +146,43 @@ def _hours(facility_id: Any, start: dt.date) -> list[list[Any]]:
     ]
 
 
+UPLOAD_COVER = "upload:"
+
+
+def _cover(facility_id: Any, profile: Profile | None) -> str:
+    """The card's cover: the first Cloudinary photo, else the first clean scanned photo (stored as
+    "upload:<id>"), else "" (the card draws the facility)."""
+    if profile is None:
+        return ""
+    if profile.photo_public_ids:
+        return str(profile.photo_public_ids[0])
+    if profile.photo_file_ids:
+        from medilink.uploads.models import ScanStatus, UploadedFile
+
+        clean = set(
+            UploadedFile.objects.filter(
+                pk__in=profile.photo_file_ids,
+                facility_id=facility_id,
+                purpose="facility_photo",
+                scan_status=ScanStatus.CLEAN,
+                deleted_at__isnull=True,
+            ).values_list("pk", flat=True)
+        )
+        for pk in profile.photo_file_ids:
+            if pk in clean:
+                return f"{UPLOAD_COVER}{pk}"
+    return ""
+
+
+def cover_url(slug: str, cover: str) -> str | None:
+    """A delivery URL for a listing cover: Cloudinary, or the public photo redirect (same host)."""
+    if not cover:
+        return None
+    if cover.startswith(UPLOAD_COVER):
+        return f"/api/v1/public/facilities/{slug}/photos/{cover[len(UPLOAD_COVER) :]}/"
+    return image_url(cover, w=800, h=350)
+
+
 def refresh(facility_id: Any) -> int:
     """Rebuild the listing rows of one facility (inside its RLS context). Facilities that are not
     live lose their rows."""
@@ -189,6 +228,7 @@ def refresh(facility_id: Any) -> int:
                 level_of_care=(profile.level_of_care if profile else "")
                 or LEVEL_BY_TYPE.get(str(facility.facility_type), ""),
                 emergency_department=bool(profile and profile.emergency_department),
+                cover_public_id=_cover(facility_id, profile),
                 latitude=profile.latitude if profile else None,
                 longitude=profile.longitude if profile else None,
                 service_id=service.pk,
@@ -230,6 +270,41 @@ class Query:
     available_today: bool = False
     emergency: bool = False
     page: int = 1
+    # free text: facility name, place, service names, or an insurer ("rama", "mutuelle")
+    q: str | None = None
+    # with an insurer: only facilities that accept it (else they come after those that do)
+    insured_only: bool = False
+
+
+# Words people type for an insurer (any language), to its code. Master data adds each code.
+INSURER_WORDS = {
+    "mutuelle": "mutuelle",
+    "mituweli": "mutuelle",
+    "cbhi": "mutuelle",
+    "rama": "rama",
+    "rssb": "rama",
+    "mmi": "mmi",
+    "military": "mmi",
+    "private": "private_other",
+    "prive": "private_other",
+    "privé": "private_other",
+}
+
+
+def parse_text(q: str | None) -> tuple[str | None, str]:
+    """An insurer named in the search, and the remaining words (lowercase)."""
+    if not q:
+        return None, ""
+    words = [w for w in re.split(r"[\s,;/]+", q.strip().lower()) if w][:12]
+    insurer = None
+    rest = []
+    for word in words:
+        code = INSURER_WORDS.get(word)
+        if code and insurer is None:
+            insurer = code
+        else:
+            rest.append(word)
+    return insurer, " ".join(rest)[:100]
 
 
 def _km(a: tuple[float, float], lat: Decimal | None, lng: Decimal | None) -> float | None:
@@ -241,16 +316,16 @@ def _km(a: tuple[float, float], lat: Decimal | None, lng: Decimal | None) -> flo
     return round(6371 * 2 * math.asin(math.sqrt(h)), 1)
 
 
-def is_open(hours: list[list[Any]], now: dt.datetime) -> bool:
-    local = now.astimezone(KIGALI)
-    day, time = local.date().isoformat(), local.strftime("%H:%M")
-    return any(d == day and a <= time < b for d, a, b in hours)
-
-
 def _accepts(row: PublicListing, insurer_code: str | None) -> str:
     if not insurer_code:
         return "unknown"
     return "yes" if insurer_code in (row.insurers or {}) else "no"
+
+
+def is_open(hours: list[list[Any]], now: dt.datetime) -> bool:
+    local = now.astimezone(KIGALI)
+    day, time = local.date().isoformat(), local.strftime("%H:%M")
+    return any(d == day and a <= time < b for d, a, b in hours)
 
 
 def search(query: Query) -> dict[str, Any]:
@@ -275,15 +350,36 @@ def search(query: Query) -> dict[str, Any]:
         rows = rows.filter(
             Q(next_slot_at__lt=end_of_day) | Q(allows_remote_join=True) | Q(allows_walk_in=True)
         )
+    typed_insurer, text = parse_text(query.q)
+    insurer_code = query.insurer_code or typed_insurer
+    # typing an insurer's name means "places that take it"
+    insured_only = query.insured_only or (typed_insurer is not None and not query.insurer_code)
     best: dict[Any, PublicListing] = {}
-    # An insurer that is not accepted does not hide a facility: the result says "no" and the
-    # patient may still choose to pay (analysis 05 §4)
+    haystack: dict[Any, list[str]] = {}
+    accepted: set[Any] = set()
+    # An insurer that is not accepted does not hide a facility unless asked (insured_only): the
+    # result says "no" and the patient may still choose to pay (analysis 05 §4)
     for row in rows.order_by("facility_name", "service_code"):
         if query.open_now and not is_open(row.hours, now):
             continue
+        if insurer_code and insurer_code in (row.insurers or {}):
+            accepted.add(row.facility_id)
+        if text:
+            haystack.setdefault(
+                row.facility_id, [row.facility_name, row.sector, row.district, row.facility_type]
+            ).extend(str(v) for v in (row.service_name_i18n or {}).values())
         current = best.get(row.facility_id)
         if current is None or (row.next_slot_at and not current.next_slot_at):
             best[row.facility_id] = row
+    if text:
+        words = text.split()
+        best = {
+            fid: row
+            for fid, row in best.items()
+            if all(w in " ".join(haystack.get(fid, [])).lower() for w in words)
+        }
+    if insurer_code and insured_only:
+        best = {fid: row for fid, row in best.items() if fid in accepted}
     results = []
     for row in best.values():
         distance = _km(query.near, row.latitude, row.longitude) if query.near else None
@@ -301,7 +397,13 @@ def search(query: Query) -> dict[str, Any]:
                 "open_now": is_open(row.hours, now),
                 "service_code": row.service_code,
                 "service_name_i18n": row.service_name_i18n,
-                "accepts_insurance": _accepts(row, query.insurer_code),
+                "accepts_insurance": (
+                    "unknown"
+                    if not insurer_code
+                    else "yes"
+                    if row.facility_id in accepted
+                    else "no"
+                ),
                 # U-01 (S5 D-14): accepted insurers only, never an amount
                 "insurers": sorted(row.insurers or {}),
                 "next_slot_at": row.next_slot_at,
@@ -309,10 +411,12 @@ def search(query: Query) -> dict[str, Any]:
                 "waiting": row.waiting,
                 "wait_range": wait_range(LiveQueue(row.waiting, row.wait_min, row.wait_max)),
                 "allows_remote_join": row.allows_remote_join,
-                "referral_hint": query.insurer_code == MUTUELLE
+                "referral_hint": insurer_code == MUTUELLE
                 and row.level_of_care in ("secondary", "tertiary"),
                 "lat": float(row.latitude) if row.latitude is not None else None,
                 "lng": float(row.longitude) if row.longitude is not None else None,
+                # the facility's own cover photo (Cloudinary); the cards draw one without it
+                "cover_url": cover_url(row.facility_slug, row.cover_public_id),
             }
         )
     if query.near:
@@ -320,9 +424,16 @@ def search(query: Query) -> dict[str, Any]:
     else:
         far = dt.datetime.max.replace(tzinfo=dt.UTC)
         results.sort(key=lambda r: (not r["open_now"], r["next_slot_at"] or far, r["name"]))
+    if insurer_code:  # places that take the insurance first (a stable sort keeps the rest)
+        results.sort(key=lambda r: r["accepts_insurance"] != "yes")
     page = max(query.page, 1)
     start = (page - 1) * PAGE_SIZE
-    return {"count": len(results), "page": page, "results": results[start : start + PAGE_SIZE]}
+    return {
+        "count": len(results),
+        "page": page,
+        "results": results[start : start + PAGE_SIZE],
+        "insurer_code": insurer_code,
+    }
 
 
 def live_facilities() -> list[Any]:

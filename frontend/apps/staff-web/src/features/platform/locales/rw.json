@@ -244,7 +244,8 @@
       "overview": "Incamake",
       "licences": "Impushya",
       "history": "Amateka",
-      "flags": "Imikorere"
+      "flags": "Imikorere",
+      "staff": "Abakozi"
     },
     "actions": {
       "start-setup": "Tangira gutegura",
@@ -261,7 +262,6 @@
       "deactivate": "{{name}} gisigara gisomwa gusa. Ni burundu."
     },
     "identifiers": "Ibiranga ikigo bya Leta",
-    "identifiersHint": "Kode y’ikigo muri Minisiteri y’Ubuzima (FOSA ID) na nimero y’imisoro ya RRA. Bigaragara ku rutonde rw’ibigo rwa Leta.",
     "saveIdentifiers": "Bika",
     "identifiersSaved": "Byabitswe.",
     "noCode": "Nta FOSA ID irahabwa",
@@ -280,7 +280,40 @@
     "photos": "Amafoto",
     "identity": "Ibiranga ikigo",
     "contact": "Aho babarizwa n’aho kiri",
-    "professionUnknown": "Umwuga ntiwatanzwe"
+    "professionUnknown": "Umwuga ntiwatanzwe",
+    "noAdminFilter": "Nta muyobozi",
+    "attention": "Bikeneye kwitabwaho:",
+    "attentionItems": {
+      "noAdmin_one": "{{count}} nta muyobozi",
+      "noAdmin_other": "{{count}} nta muyobozi",
+      "expired_one": "Uruhushya {{count}} rwarangiye",
+      "expired_other": "Impushya {{count}} zarangiye",
+      "expiring_one": "Uruhushya {{count}} rugiye kurangira",
+      "expiring_other": "Impushya {{count}} zigiye kurangira",
+      "missingCode_one": "{{count}} nta nomero ya FOSA",
+      "missingCode_other": "{{count}} nta nomero ya FOSA"
+    },
+    "edit": "Hindura",
+    "more": "Ibindi bikorwa",
+    "noAdminAlert": "Nta wushobora kuyobora iki kigo: nta muyobozi ukora gifite. Mutumire mu gice cy'Abakozi.",
+    "staffTitle": "Abafite uburenganzira",
+    "invite": "Tumira",
+    "noStaff": "Nta muntu urabona uburenganzira.",
+    "twoStepOn": "Intambwe ebyiri zirakora",
+    "twoStepOff": "Intambwe ebyiri ntizikora",
+    "removed": "Uburenganzira bwakuweho",
+    "pending_one": "Ubutumire {{count}} butegereje",
+    "pending_other": "Ubutumire {{count}} butegereje",
+    "expires": "Burarangira {{when}}",
+    "cancelInvite": "Hagarika",
+    "inviteTitle": "Tumira umuntu muri {{name}}",
+    "cancel": "Reka",
+    "sendInvite": "Ohereza ubutumire",
+    "fullName": "Amazina yose",
+    "roles": "Inshingano",
+    "editTitle": "Hindura amakuru y'ikigo",
+    "saveDetails": "Bika impinduka",
+    "slugFixed": "Aderesi ya interineti iguma ari {{slug}}: imiyoboro abantu basanganywe ikomeza gukora."
   },
   "licences": {
     "add": "Ongeraho uruhushya",
@@ -300,7 +333,8 @@
   "flags": {
     "title": "Imikorere",
     "names": {
-      "security.pin_unlock": "Gufungura ukoresheje PIN"
+      "security.pin_unlock": "Gufungura ukoresheje PIN",
+      "security.staff_mfa": "Kwinjira mu ntambwe ebyiri ku bakozi"
     },
     "on": "Irakora",
     "off": "Ntikora",
@@ -310,7 +344,8 @@
     "overridden": "Yashyiriweho iki kigo.",
     "useDefault": "Koresha agaciro gasanzwe",
     "overrides_one": "Ikigo {{count}} gifite icyo cyihariye",
-    "overrides_other": "Ibigo {{count}} bifite icyo byihariye"
+    "overrides_other": "Ibigo {{count}} bifite icyo byihariye",
+    "staffMfaOff": "Kwinjira mu ntambwe ebyiri byahagaritswe: abakozi binjira bakoresheje ijambo ry'ibanga gusa. Bisubizeho nimurangiza igerageza."
   },
   "masterData": {
     "title": "Amakuru shingiro",
@@ -417,7 +452,6 @@
     "errorLine": "Umurongo {{line}} ({{field}}): {{message}}",
     "samples": "Ingero z'impinduka",
     "confirm": "Kora impinduka",
-    "descriptionHint": "Icyo iyi serivisi ari cyo, mu magambo yoroshye. Bigaragara ku rupapuro rwa serivisi.",
     "level": "Urwego",
     "parent": "Kode y’umubyeyi"
   },
@@ -437,7 +471,6 @@
     "phone": "Telefoni",
     "email": "Imeyili",
     "location": "Aho giherereye",
-    "locationHint": "Umudugudu, aderesi n’umuryango ku ikarita (abarwayi bayikoresha bashaka inzira).",
     "address": "Aderesi",
     "mapLabel": "Ikarita: kanda ushyireho ikigo",
     "pinLabel": "Umuryango w’ikigo (kurura ugahindure)",
@@ -451,7 +484,6 @@
       "village": "Umudugudu"
     },
     "applicant": "Usaba",
-    "applicantHint": "Umuntu uvugira ikigo. Ni we uhabwa link.",
     "name": "Amazina yose",
     "position": "Umwanya",
     "admin": "Umuyobozi w’ikigo",

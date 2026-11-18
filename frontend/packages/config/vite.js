@@ -10,6 +10,9 @@ import { resolve } from "node:path";
 
 export const DEFAULT_API_BASE_URL = "http://localhost:8000";
 export const DEFAULT_MAP_TILES_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+/** Cloudinary: signed direct uploads (connect-src) and image delivery (img-src). */
+export const CLOUDINARY_UPLOAD = "https://api.cloudinary.com";
+export const CLOUDINARY_DELIVERY = "https://res.cloudinary.com";
 
 /**
  * Resolve the build-time environment of an app.
@@ -73,10 +76,12 @@ export function contentSecurityPolicy({
     // injection, which React's escaping and the strict script-src keep low. Revisit if the apps
     // move behind a server that can send a nonce header.
     `style-src 'self' 'unsafe-inline'${googleSignIn ? " https://accounts.google.com/gsi/style" : ""}`,
-    // map tiles come from one configured origin (upgrade 03 §2, OD-3)
-    `img-src 'self' data: ${tiles}`,
+    // map tiles come from one configured origin (upgrade 03 §2, OD-3); photos (facility, doctor,
+    // patient) from Cloudinary's delivery host
+    `img-src 'self' data: ${tiles} ${CLOUDINARY_DELIVERY} ${CLOUDINARY_UPLOAD}`,
     "font-src 'self'",
-    `connect-src 'self' ${api.origin} ${ws}${gsi}`,
+    // photo uploads go from the browser straight to Cloudinary, signed by the API
+    `connect-src 'self' ${api.origin} ${ws}${gsi} ${CLOUDINARY_UPLOAD}`,
     ...(googleSignIn ? [`frame-src${gsi}`] : []),
     "worker-src 'self'",
     "manifest-src 'self'",

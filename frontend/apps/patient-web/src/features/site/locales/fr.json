@@ -136,7 +136,8 @@
     },
     "map": "Emplacement sur la carte",
     "insurance": "Assurances acceptées",
-    "emergencyOpen": "Service d’urgences ouvert jour et nuit. Appelez le {{number}} si une vie est en danger."
+    "emergencyOpen": "Service d’urgences ouvert jour et nuit. Appelez le {{number}} si une vie est en danger.",
+    "logo": "Logo de {{name}}"
   },
   "doctors": {
     "title": "Médecins",
@@ -459,13 +460,19 @@
       "waiting": "Personnes en attente",
       "typical": "Attente habituelle",
       "minutes_one": "{{count}} min",
-      "minutes_other": "{{count}} min"
+      "minutes_other": "{{count}} min",
+      "waitingHint": "dans les établissements ouverts",
+      "typicalHint": "avant d'être reçu, aujourd'hui"
     },
     "symptoms": {
       "title": "Vous ne savez pas où aller ?",
       "action": "Vérifiez vos symptômes"
     },
-    "howLine": "Nouveau ici ?"
+    "howLine": "Nouveau ici ?",
+    "rotate2": "près de chez vous.",
+    "rotate3": "avec votre assurance.",
+    "rotate4": "pour toute votre famille.",
+    "leadLong": "Voyez quels établissements de santé sont ouverts et combien de temps on attend en ce moment. Rejoignez la file depuis chez vous ou réservez une heure, et vérifiez quelle assurance chacun accepte."
   },
   "filters": {
     "button": "Filtres",

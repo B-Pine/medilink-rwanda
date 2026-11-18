@@ -24,6 +24,7 @@ import type {
 // [S1 imports]
 import { createMasterDataApi } from "./features/masterdata";
 import { createOnboardingApi } from "./features/onboarding";
+import { createImagesApi } from "./features/images";
 import { createSecurityApi } from "./features/security";
 import { createUploadsApi } from "./features/uploads";
 // [/S1 imports]
@@ -171,6 +172,11 @@ export function createMediLinkApi(client: ApiClient) {
     uploads: {
       staff: createUploadsApi(client, "staff"),
       patient: createUploadsApi(client, "patient"),
+    },
+    // images on Cloudinary (signed direct uploads)
+    images: {
+      staff: createImagesApi(client, "staff"),
+      patient: createImagesApi(client, "patient"),
     },
     // [/S1]
     // [S3]

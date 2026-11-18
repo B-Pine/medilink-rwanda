@@ -23,6 +23,8 @@ export interface MockIdentifier extends Identifier {
 
 export interface MockPatient {
   id: string;
+  /** Cloudinary photo (mock public id). */
+  avatar_public_id?: string;
   medilink_number: string;
   full_name: string;
   preferred_name: string | null;

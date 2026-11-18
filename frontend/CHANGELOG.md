@@ -9,6 +9,135 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Search by insurance (2026-11-18)
+
+- Added: Find care (public and dashboard) searches on the server, so "rama kicukiro" or
+  "mutuelle" works; a typed insurer lists only places that take it, with "Show the others too".
+  The dashboard adds a "My insurance" filter from the patient's own card.
+
+### Less explanatory text in the staff app (2026-11-18)
+
+- Changed: intro lines under page and card titles, long field hints and dialog descriptions that
+  repeated the title are gone (about 50 strings in three languages); some hints are shorter. Kept:
+  privacy and consent notes, confirmations before risky actions, and hints that state a rule.
+- Fixed: images may also come from Cloudinary's download host (scanned facility photos stored on
+  Cloudinary), allowed by the Content-Security-Policy.
+
+### Facility and user management, cleaner (2026-11-18)
+
+- Added: the facility list has status tabs with counts and a "Needs attention" line (no facility
+  admin, licences expired or expiring, no FOSA ID) like the user list; each row shows the
+  facility's logo or initials, and a facility without an admin says so in amber.
+- Changed: a facility's page opens with an identity band (cover photo, logo, name, status, type,
+  place, FOSA ID) and its actions in the header: "Edit details", the next status step, and
+  Suspend / Deactivate under "More actions" (they used to sit at the bottom of the page).
+- Added: a Staff tab: everyone with access, roles, two-step state and last sign-in, pending
+  invitations with Cancel, and "Invite" (email, roles, reason; facility admin chosen when the
+  facility has none). "Edit details" corrects name, type, ownership and level of care with a reason.
+- Added: on a person's page, "Change roles" for each facility and a "Platform team" card to add or
+  remove a platform admin; each asks for a reason after confirming identity.
+
+### Updates reach open pages (2026-11-18)
+
+- Fixed: a new deploy of the patient app waited in the browser until every tab closed, so people
+  kept the old version unless they cleared the cache. The service worker is registered by hand
+  (`injectRegister: false`), and vite-plugin-pwa then leaves out `skipWaiting` and `clientsClaim`;
+  both are now set, so a new version takes over at once and the open page reloads itself
+  (`registerType: "autoUpdate"`, checked on focus and hourly). Browsers holding the old worker pick
+  this one up on their next visit, without clearing anything.
+
+### Photos on Cloudinary, two-step switch (2026-11-18)
+
+- Fixed: the production Content-Security-Policy blocked the browser's upload to
+  `https://api.cloudinary.com` ("The connection dropped during the upload") and would have hidden
+  every Cloudinary photo; `connect-src` and `img-src` now allow Cloudinary's upload and delivery
+  hosts (both apps).
+
+- Added: `api.images.{staff,patient}.upload(file, kind, onProgress)`: type and size check (JPG,
+  PNG, WebP, HEIC, up to 8 MB), a signature from the API, then the file straight to Cloudinary
+  with progress. Mocked in `dev:mock` (images kept in memory).
+- Added: facility settings upload photos and a logo to Cloudinary (the first photo is the cover);
+  the public facility page uses the cover photo and the logo, search cards show the cover photo,
+  and the drawing stays for facilities without one. Doctors set their photo on their public
+  profile; it shows on doctor cards and pages and in the staff user menu. The sidebar workspace
+  card shows the facility logo. Patients' profile photo goes to Cloudinary and shows in the header,
+  family, privacy and booking lists; staff see it on the patient record. Without Cloudinary on the
+  server the photo screens say uploads aren't set up yet (no silent fallback to the scanned
+  upload, which hid the cause and failed with "Something went wrong").
+- Added: Feature flags names "Staff two-step sign-in" and warns while it is off; the "Confirm it's
+  you" dialog asks only for the password then.
+
+### Home fits small phones (2026-11-16)
+
+- Fixed: on 360 px phones the hero search fields ran past their white card (a grid without a base
+  column grew to the inputs); the symptom link wrapped into three lines around the floating
+  assistant; the live figures were three columns with labels over four lines. The search card
+  now has one shrinking column, the link wraps normally at body-small size, and below 640 px the
+  figures are three rows (label left, number right).
+
+### Home hero redesigned like a poster (2026-11-16)
+
+- Changed: the hero photo now melts into the page colour instead of sitting under a dark wash:
+  on phones and tablets it is a banner at the top in its own shape (the people stay in view)
+  fading into the page; from 1280 px it fills the right of the card and fades left into the page,
+  so no word sits on the photo. Dark words, one green accent phrase with a hand-drawn brush stroke
+  (drawn once), a soft brand haze behind the headline, a live "n facilities open now" label with a
+  pulsing dot, and a frosted card on the photo with the open facility that has the shortest wait
+  (live data only). Light and dark themes follow the page tokens.
+- Removed: the "Common needs" chips and the Imigongo texture from the hero (the care types follow
+  right below), so the hero holds one label, one headline, one paragraph, one search, one link.
+- Changed: the headline rotates only on computers; phones and tablets show its first phrase (a
+  wrapped longer phrase left a gap).
+
+### A shorter, calmer home page and a hero that explains more (2026-11-16)
+
+- Changed: the hero's second line changes every few seconds ("without the long wait", "close to
+  home", "with your insurance", "for your whole family"), in one grid cell so nothing below moves;
+  screen readers and reduced motion get the first phrase only, and it pauses in a hidden tab. A
+  longer lead says what MediLink does (who is open, the wait now, queue from home or book, which
+  insurance); phones keep the short lead.
+- Changed: "Facilities near you" shows three compact cards (no drawing, status beside the type;
+  `FacilityExplorer` `compact`) with "Near me" and "View all facilities" as plain links.
+- Changed: one ending: the forest "for facilities" band is a quiet line under "Ready to find
+  healthcare?"; "New here? How MediLink works" sits with the FAQ; one gap between sections.
+- Changed: every live figure has a sub-line; on phones the three sit in one row; the care types
+  are two columns; the common needs swipe sideways in one row.
+- Changed: on wide screens the assistant button sits in the public header instead of floating
+  over the right edge of every page (opening hours, cards); phones keep the floating button,
+  with the symptom link clear of it.
+
+### Home FAQ, a closing invitation and Find Care in the phone header (2026-11-16)
+
+- Added: "Most asked" on the home page: five questions from the help centre (account to search,
+  how the wait is worked out, insurers, cancelling, no smartphone), the first open, with
+  "More questions" to Help. Same translated answers as the help centre, no new strings.
+- Added: a closing call-to-action before the facilities band: "Ready to find healthcare?", one
+  line, and Find Care / Create account.
+- Added: a green Find Care button in the header on phones and tablets, beside emergency and the
+  menu.
+- Fixed: below 1200 px, Sign In and the language select showed in the header (the button's own
+  `inline-flex` beat `hidden`), pushing it past a phone's width; the breakpoint now sits on a
+  wrapper.
+
+### Cleaner public navbar (2026-11-16)
+
+- Changed: the red emergency strip above the header is gone; emergency lives in the bar itself
+  (a red "Emergency" link on wide screens, a red icon below), and the phone menu adds a
+  "Call 912" button. One 64 px bar: the logo, the pages as plain text links with a green
+  underline on the current one (it glides between pages), then emergency, the language code and
+  a green Sign in button.
+
+### Home hero: a health centre photo (2026-11-16)
+
+- Changed: the home hero is a full-width photo of a health centre on Rwanda's hills (a nurse
+  welcoming a mother and baby, an older man waiting) under a dark green wash, with a larger white
+  headline, the search card, frosted need chips and the symptom link on it; the live figures
+  overlap its foot. The illustration it replaces stays in the kit. The photo settles from a slight
+  zoom once (off under reduced motion), is served as WebP in two widths with a JPEG fallback
+  (`public/images/hero/`), and loads with high priority.
+- Note: the image is AI-generated and illustrative (owner-supplied): not a real MediLink facility,
+  staff or patients; it carries no text, signs or logos.
+
 ### Patient dashboard audit: one top bar, one picker, a shorter Overview (2026-11-16)
 
 - Fixed: the Settings section links were a row cut off in the side column ("Langu…"); they are a

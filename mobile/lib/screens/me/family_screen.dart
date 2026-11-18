@@ -66,7 +66,7 @@ class FamilyScreen extends ConsumerWidget {
             children: [
               for (final p in me.profiles)
                 GroupedRow(
-                  leading: Avatar(name: p.displayName),
+                  leading: Avatar(name: p.displayName, photoUrl: p.avatarUrl),
                   title: p.displayName,
                   subtitle: s.t(p.relationship == 'self' ? 'you' : p.relationship),
                   onTap: () => context.go('/me/family/${p.patientId}'),

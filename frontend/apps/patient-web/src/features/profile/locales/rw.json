@@ -24,7 +24,14 @@
     "change": "Hindura ifoto",
     "remove": "Kuraho",
     "alt": "Ifoto ya {{name}}",
-    "tooBig": "Hitamo ifoto iri munsi ya MB 5."
+    "uploading": "Birimo koherezwa… {{percent}}%",
+    "errors": {
+      "type": "Koresha ifoto ya JPG, PNG, WebP cyangwa HEIC.",
+      "size": "Hitamo ifoto iri munsi ya MB 8.",
+      "upload": "Kohereza ntibyakunze. Ongera ugerageze.",
+      "network": "Umuyoboro wacitse mu gihe cyo kohereza. Ongera ugerageze.",
+      "unavailable": "Kohereza amafoto ntibirashyirwaho kuri seriveri. Ongera ugerageze nyuma."
+    }
   },
   "sections": {
     "details": "Amakuru yanjye",

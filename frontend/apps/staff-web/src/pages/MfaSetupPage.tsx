@@ -121,7 +121,6 @@ function EnrolStep({ onConfirmed }: { onConfirmed: (user: StaffMe, codes: string
   const heading = (
     <div className="flex flex-col gap-2">
       <PageHeading title={title}>{title}</PageHeading>
-      <p className="m-0 text-fg-muted">{t("mfaSetup.intro")}</p>
     </div>
   );
 

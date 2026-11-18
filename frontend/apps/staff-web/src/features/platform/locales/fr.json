@@ -244,7 +244,8 @@
       "overview": "Aperçu",
       "licences": "Licences",
       "history": "Historique",
-      "flags": "Fonctionnalités"
+      "flags": "Fonctionnalités",
+      "staff": "Personnel"
     },
     "actions": {
       "start-setup": "Commencer la configuration",
@@ -261,7 +262,6 @@
       "deactivate": "{{name}} passe en lecture seule. C'est définitif."
     },
     "identifiers": "Identifiants officiels",
-    "identifiersHint": "Le code de l’établissement au Ministère de la Santé (FOSA ID) et le numéro fiscal RRA. Ils figurent dans la liste des établissements pour le gouvernement.",
     "saveIdentifiers": "Enregistrer",
     "identifiersSaved": "Enregistré.",
     "noCode": "Pas encore de FOSA ID",
@@ -280,7 +280,40 @@
     "photos": "Photos",
     "identity": "Identité",
     "contact": "Contact et lieu",
-    "professionUnknown": "Profession non indiquée"
+    "professionUnknown": "Profession non indiquée",
+    "noAdminFilter": "Sans administrateur",
+    "attention": "À traiter :",
+    "attentionItems": {
+      "noAdmin_one": "{{count}} sans administrateur",
+      "noAdmin_other": "{{count}} sans administrateur",
+      "expired_one": "{{count}} licence expirée",
+      "expired_other": "{{count}} licences expirées",
+      "expiring_one": "{{count}} licence bientôt expirée",
+      "expiring_other": "{{count}} licences bientôt expirées",
+      "missingCode_one": "{{count}} sans code FOSA",
+      "missingCode_other": "{{count}} sans code FOSA"
+    },
+    "edit": "Modifier",
+    "more": "Autres actions",
+    "noAdminAlert": "Personne ne peut gérer cet établissement : il n'a aucun administrateur actif. Invitez-en un depuis l'onglet Personnel.",
+    "staffTitle": "Personnes ayant accès",
+    "invite": "Inviter",
+    "noStaff": "Personne n'a encore accès.",
+    "twoStepOn": "Deux étapes activées",
+    "twoStepOff": "Deux étapes désactivées",
+    "removed": "Accès retiré",
+    "pending_one": "{{count}} invitation en attente",
+    "pending_other": "{{count}} invitations en attente",
+    "expires": "Expire {{when}}",
+    "cancelInvite": "Annuler",
+    "inviteTitle": "Inviter une personne à {{name}}",
+    "cancel": "Annuler",
+    "sendInvite": "Envoyer l'invitation",
+    "fullName": "Nom complet",
+    "roles": "Rôles",
+    "editTitle": "Modifier l'établissement",
+    "saveDetails": "Enregistrer",
+    "slugFixed": "L'adresse web reste {{slug}} : les liens existants continuent de fonctionner."
   },
   "licences": {
     "add": "Ajouter une licence",
@@ -300,7 +333,8 @@
   "flags": {
     "title": "Fonctionnalités",
     "names": {
-      "security.pin_unlock": "Déverrouillage par code PIN"
+      "security.pin_unlock": "Déverrouillage par code PIN",
+      "security.staff_mfa": "Connexion en deux étapes du personnel"
     },
     "on": "Activée",
     "off": "Désactivée",
@@ -310,7 +344,8 @@
     "overridden": "Réglée pour cet établissement.",
     "useDefault": "Revenir à la valeur par défaut",
     "overrides_one": "{{count}} établissement a son propre réglage",
-    "overrides_other": "{{count}} établissements ont leur propre réglage"
+    "overrides_other": "{{count}} établissements ont leur propre réglage",
+    "staffMfaOff": "La connexion en deux étapes est désactivée : le personnel se connecte avec le seul mot de passe. Réactivez-la après les tests."
   },
   "masterData": {
     "title": "Données de référence",
@@ -417,7 +452,6 @@
     "errorLine": "Ligne {{line}} ({{field}}) : {{message}}",
     "samples": "Exemples de changements",
     "confirm": "Appliquer les changements",
-    "descriptionHint": "Ce qu’est le service, en mots simples. Affichée sur la page publique du service.",
     "level": "Niveau",
     "parent": "Code parent"
   },
@@ -437,7 +471,6 @@
     "phone": "Téléphone",
     "email": "E-mail",
     "location": "Emplacement",
-    "locationHint": "Le village, l’adresse et l’entrée sur la carte (les patients s’en servent pour l’itinéraire).",
     "address": "Adresse",
     "mapLabel": "Carte : touchez pour placer l’établissement",
     "pinLabel": "Entrée de l’établissement (glissez pour déplacer)",
@@ -451,7 +484,6 @@
       "village": "Village"
     },
     "applicant": "Demandeur",
-    "applicantHint": "La personne qui parle au nom de l’établissement. Elle reçoit le lien.",
     "name": "Nom complet",
     "position": "Fonction",
     "admin": "Administrateur de l’établissement",

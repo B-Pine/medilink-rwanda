@@ -28,6 +28,8 @@ export interface ProfileSummary {
   medilink_number: string | null;
   date_of_birth: string | null;
   completion_percent: number;
+  /** Cloudinary photo; initials without one. */
+  avatar_url?: string | null;
 }
 
 export interface ProfileCompletion {
@@ -57,6 +59,8 @@ export interface PatientProfileDetail {
   completion: ProfileCompletion;
   /** Profile photo set (2026-11-05); `photoLink` gives a 5-minute link. */
   has_photo?: boolean;
+  /** The photo on Cloudinary (`setAvatar`); shown before the scanned one. */
+  avatar_url?: string | null;
   version: number;
 }
 
@@ -167,6 +171,13 @@ export function createProfileApi(client: ApiClient) {
       }),
     removePhoto: (id: Uuid) =>
       client.request<PatientProfileDetail>("DELETE", profilePaths.profileAction(id, "photo")),
+    /** Cloudinary photo: the public id from `images.patient.upload(file, "patient_avatar")`. */
+    setAvatar: (id: Uuid, publicId: string) =>
+      client.request<PatientProfileDetail>("PUT", profilePaths.profileAction(id, "avatar"), {
+        body: { public_id: publicId },
+      }),
+    removeAvatar: (id: Uuid) =>
+      client.request<PatientProfileDetail>("DELETE", profilePaths.profileAction(id, "avatar")),
     photoLink: (id: Uuid) =>
       client.post<DownloadLink>(`${profilePaths.profileAction(id, "photo")}download-links/`),
 

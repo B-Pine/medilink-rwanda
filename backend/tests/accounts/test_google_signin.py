@@ -58,6 +58,7 @@ def token(
     key: Any = _KEY,
     expires_in: int = 600,
     name: str = "Keza Uwase",
+    picture: str | None = None,
 ) -> str:
     now = int(time.time())
     claims = {
@@ -70,6 +71,8 @@ def token(
         "iat": now,
         "exp": now + expires_in,
     }
+    if picture is not None:
+        claims["picture"] = picture
     return jwt.encode(claims, key, algorithm="RS256")
 
 
@@ -165,3 +168,79 @@ def test_tokens_not_from_google_for_us_are_refused(api: APIClient, bad: dict[str
     assert response.status_code == 401 and error_code(response) == "not_authenticated"
     assert not User.objects.filter(email="keza@gmail.com").exists()
     assert AuditEntry.objects.filter(action="auth.google.refused").exists()
+
+
+# ---- the Google profile photo (images, 2026-11-18) -----------------------------------------------
+
+PHOTO = "https://lh3.googleusercontent.com/a/ACg8ocK-abc=s96-c"
+CLOUDINARY = {
+    "cloud_name": "demo-cloud",
+    "api_key": "123456",
+    "api_secret": "test-secret",
+    "upload_preset": "medilink_signed",
+    "root_folder": "medilink",
+}
+
+
+def test_picture_url_only_from_google_and_larger() -> None:
+    assert google.picture_url(PHOTO) == "https://lh3.googleusercontent.com/a/ACg8ocK-abc=s400-c"
+    assert google.picture_url("http://lh3.googleusercontent.com/a/x") == ""
+    assert google.picture_url("https://evil.example/a.png") == ""
+    assert google.picture_url("https://googleusercontent.com.evil.example/a") == ""
+    assert google.picture_url(None) == ""
+
+
+def test_new_google_account_gets_the_google_photo(
+    api: APIClient, settings: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    from unittest import mock
+
+    settings.CLOUDINARY = CLOUDINARY
+    uploaded = {"public_id": "medilink/patients/avatars/g1", "asset_folder": "x"}
+    with (
+        mock.patch("cloudinary.uploader.upload", return_value=uploaded) as upload,
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        response = api.post(URL, {"id_token": token(picture=PHOTO), **CONSENTS}, format="json")
+    assert response.status_code == 200, response.content
+    upload.assert_called_once()
+    assert upload.call_args.args[0].endswith("=s400-c")
+    assert upload.call_args.kwargs["asset_folder"] == "medilink/patients/avatars"
+    link = PatientLink.objects.select_related("patient").get(
+        account__email="keza@gmail.com", relationship="self"
+    )
+    assert link.patient.avatar_public_id == "medilink/patients/avatars/g1"
+    me = api.get(ME).json()
+    assert me["profiles"][0]["avatar_url"].endswith("/medilink/patients/avatars/g1")
+
+
+def test_google_photo_never_replaces_a_chosen_one(
+    api: APIClient, settings: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    from unittest import mock
+
+    settings.CLOUDINARY = CLOUDINARY
+    user = make_patient_user(email="keza@gmail.com", full_name="Uwase Keza")
+    link = PatientLink.objects.select_related("patient").get(account=user, relationship="self")
+    type(link.patient).objects.filter(pk=link.patient.pk).update(avatar_public_id="mine")
+    with (
+        mock.patch("cloudinary.uploader.upload") as upload,
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        assert api.post(URL, {"id_token": token(picture=PHOTO)}, format="json").status_code == 200
+    upload.assert_not_called()
+
+
+def test_google_photo_failure_does_not_fail_the_sign_in(
+    api: APIClient, settings: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    from unittest import mock
+
+    settings.CLOUDINARY = CLOUDINARY
+    make_patient_user(email="keza@gmail.com", full_name="Uwase Keza")
+    with (
+        mock.patch("cloudinary.uploader.upload", side_effect=RuntimeError("down")),
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        response = api.post(URL, {"id_token": token(picture=PHOTO)}, format="json")
+    assert response.status_code == 200

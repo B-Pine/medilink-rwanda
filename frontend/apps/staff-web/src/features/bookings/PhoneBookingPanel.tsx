@@ -353,7 +353,6 @@ export function PhoneBookingPanel({
             />
             <PhoneField
               label={t("bookings.reason.phone")}
-              hint={t("bookings.reason.phoneHint")}
               optional
               value={phone}
               error={phoneError}

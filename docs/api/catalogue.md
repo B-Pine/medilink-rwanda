@@ -95,12 +95,13 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/auth/step-up/` | Re-authenticate for sensitive actions | Staff session | FR-SEC-06 | Password + second factor; 5-minute window; RL: mfa | Implemented (#47) |
+| `POST` | `/api/v1/staff/auth/step-up/` | Re-authenticate for sensitive actions | Staff session | FR-SEC-06 | Password + second factor (password alone while `security.staff_mfa` is off); 5-minute window; RL: mfa | Implemented (#47) |
 | `GET`, `POST` | `/api/v1/staff/auth/lock/` | Lock state; lock now | Staff session (locked or not) | FR-SEC-06 | Audit | Implemented (#47) |
 | `POST` | `/api/v1/staff/auth/unlock/` | Unlock with PIN or password | Locked staff session | FR-SEC-06 | 5 failures end the session; RL: unlock | Implemented (#47) |
 | `PUT`, `DELETE` | `/api/v1/staff/auth/pin/` | Set, change or remove the unlock PIN | Staff (`PUT`: step-up) | FR-SEC-06 | Argon2id; Audit | Implemented (#47) |
 | `GET` | `/api/v1/staff/master-data/{kind}/` | All nine kinds, read-only, searchable | Staff | FR-ONB-10 | Trigram search for drugs and diagnosis codes | Implemented (#47) |
 | `POST` | `/api/v1/staff/uploads/` | Upload a file for a purpose | Staff + purpose `can_upload` | FR-DOC-03 | Idem; RL: upload | Implemented (#47) |
+| `POST` | `/api/v1/staff/uploads/signature/` | Sign a direct image upload to Cloudinary (`facility_photo`, `facility_logo`, `provider_avatar`) | Staff (facility kinds: `facility.configure`) | Images 2026-11-18 | Kinds are a whitelist, folder chosen by the server; 503 without credentials; RL: 30/hour | Implemented |
 | `GET` | `/api/v1/staff/uploads/{id}/` | Upload and scan status | Uploader or purpose `can_read` | FR-DOC-03 | | Implemented (#47) |
 | `POST` | `/api/v1/staff/uploads/{id}/download-links/` | 5-minute signed link | As above | FR-DOC-05 | Clean files only; always served as `attachment` (R1 #83); Audit | Implemented (#47) |
 
@@ -109,6 +110,8 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `POST` | `/api/v1/patient/uploads/` | Upload a file for a purpose (S3: `insurance_card`) | Patient + purpose `can_upload` | FR-DOC-03 | As the staff version | Implemented (#47) |
+| `POST` | `/api/v1/patient/uploads/signature/` | Sign a direct image upload to Cloudinary (`patient_avatar`) | Patient session | Images 2026-11-18 | As the staff version | Implemented |
+| `PUT`, `DELETE` | `/api/v1/patient/profiles/{id}/avatar/` | Set or remove the profile photo from a Cloudinary upload (`{public_id}`) | Self or guardian (`edit_contacts`) | Images 2026-11-18 | Public id checked with the Admin API; audit `patients.photo.updated` / `removed` | Implemented |
 | `GET` | `/api/v1/patient/uploads/{id}/` | Upload and scan status | Uploader or purpose `can_read` | FR-DOC-03 | | Implemented (#47) |
 | `POST` | `/api/v1/patient/uploads/{id}/download-links/` | 5-minute signed link | As above | FR-DOC-05 | | Implemented (#47) |
 
@@ -123,6 +126,12 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | `GET` | `/api/v1/platform/users/export/` | Staff and platform accounts as CSV, with the list's filters (access review) | Platform admin | Upgrade 05 §6 | Never patients; UTF-8 BOM, formula-safe; audit `platform.user.list_exported` | Implemented (#198) |
 | `GET` | `/api/v1/platform/reports/national/` | National aggregate report for a period (`from`, `to`, `group`): load by facility and district, wait trend to the doctor, top diagnoses by district, stock-outs now | Platform admin | FR-RPT-05, FR-RPT-08 (part) | W9 (#208). Read one facility at a time in its own RLS context (W6 helpers); aggregates only, never a patient; groups of 1-9 patients or visits suppressed (`value: null, suppressed: true`), with complementary suppression inside a district and of the national total; waits hidden below 10 called; diagnoses listed only at 10+ and never sensitive | Implemented (#208) |
 | `GET` | `/api/v1/platform/reports/national/export/` | One table as CSV (`table`: facilities, districts, waits, diagnoses, stockouts) | Platform admin | FR-RPT-04, FR-RPT-05 | UTF-8 BOM, formula-safe; hidden cells read `suppressed`; audit `platform.report.exported` | Implemented (#208) |
+| `GET` | `/api/v1/platform/facilities/summary/` | Counts for the list's "needs attention" line | Platform admin | Management 2026-11-18 | | Implemented |
+| `GET` | `/api/v1/platform/facilities/{id}/staff/` | People with access (active and removed) and pending invitations | Platform admin | Management 2026-11-18 | | Implemented |
+| `POST`, `DELETE` | `/api/v1/platform/facilities/{id}/invitations/[{invitation_id}/]` | Invite a person with roles; cancel a pending invitation | Platform admin | Management 2026-11-18 | Step-up; `{reason}`; audit `facility.staff_invited` | Implemented |
+| `PATCH` | `/api/v1/platform/facilities/{id}/details/` | Correct name, type, ownership, level of care | Platform admin | Management 2026-11-18 | Step-up; `{reason}`; audit `facility.details_updated` | Implemented |
+| `POST` | `/api/v1/platform/users/{id}/facilities/{facility_id}/roles/` | Set a person's roles at a facility | Platform admin | Management 2026-11-18 | Step-up; `{reason}`; keeps one facility admin (`422`); audit `platform.user.roles_changed` | Implemented |
+| `POST` | `/api/v1/platform/users/{id}/platform-admin/{grant\|revoke}/` | Add to or remove from the platform team | Platform admin | Management 2026-11-18 | Step-up; `{reason}`; never yourself, the last admin or a patient account (`422`); revoke ends sessions | Implemented |
 | `GET`, `PATCH` | `/api/v1/platform/users/{id}/` | Account profile: sessions (short non-secret refs), recent security events, language, email confirmation, sign-in block, facility access with removal date and reason, pending invitations, admin changes; `PATCH` corrects `full_name`, `phone`, `preferred_language` | Platform admin | Upgrade 05 §6 | Audit `platform.user.viewed`; `PATCH`: step-up, `{reason}` ≥ 5, never yourself (`422`), no phone for patients (`400`), never the email or password; audit `platform.user.updated` | Implemented (#154, #198) |
 | `POST` | `/api/v1/platform/users/{id}/lock/`, `unlock/`, `reset-mfa/`, `revoke-sessions/` | Account actions | Platform admin | Upgrade 05 §6 | Up; `{reason}` ≥ 5; never on yourself (`422`); audit `platform.user.*` | Implemented (#154) |
 | `POST` | `/api/v1/platform/users/{id}/send-password-reset/`, `resend-verification/`, `clear-sign-in-block/` | Help for someone who calls: a reset link or the sign-up confirmation emailed to their own address; end the block after failed passwords or MFA codes | Platform admin | Upgrade 05 §6, security 03 §6 | Up; `{reason}` ≥ 5; never yourself; 3 emails per address per hour (`422`); a reset needs an unlocked account; audit `platform.user.password_reset_sent`, `verification_resent`, `sign_in_unblocked` | Implemented (#198) |
@@ -400,6 +409,7 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership, declared 24-hour emergency department (`emergency`) | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, live `waiting` and `wait_range`, accepted `insurers` (contract PT §2.1), referral hint; RL: search | Planned |
+| `POST` | `/api/v1/public/facilities/search/` | Search by text and insurance: `q` matches name, sector, district, type and service; an insurer word in `q` (mutuelle, mituweli, cbhi, rama, rssb, mmi, military, private, privé) or `insurer_code` puts places that take it first | Public | FR-SCH-01, FR-BIL-03 | `insured_only` keeps only those (implied when the insurer is only typed); the page echoes `insurer_code`; RL: search | Implemented (2026-11-18) |
 | `GET` | `/api/v1/public/facilities/{slug}/` | Facility profile | Public | FR-SCH-02, FR-SCH-03 | Pre-rendered by patient-web at build time; each service carries the live `waiting` count and `wait_range` (contract PT §2.1) | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/photos/{upload_id}/` | One of the facility's public photos | Public | FR-SCH-02 | 302 to a short-lived signed link; only clean photos the admin still lists. The profile also carries `email`, `website` and `photos` | Built |
 | `GET` | `/api/v1/public/facilities/{slug}/services/` | Services with fees, insurers and estimated share | Public | FR-SCH-02, FR-BIL-03 | `?insurer=` for the share | Planned |

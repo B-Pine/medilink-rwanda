@@ -12,10 +12,17 @@ List<String> _strings(Object? v) => v is List ? v.map((e) => e.toString()).toLis
 List<Json> resultsOf(Object? data) => data is Map ? _list(data['results']) : _list(data);
 
 class Profile {
-  Profile(this.patientId, this.displayName, this.relationship);
-  factory Profile.fromJson(Json j) =>
-      Profile(j['patient_id'] as String, j['display_name'] as String? ?? '', j['relationship'] as String? ?? 'self');
+  Profile(this.patientId, this.displayName, this.relationship, [this.avatarUrl]);
+  factory Profile.fromJson(Json j) => Profile(
+        j['patient_id'] as String,
+        j['display_name'] as String? ?? '',
+        j['relationship'] as String? ?? 'self',
+        j['avatar_url'] as String?,
+      );
   final String patientId, displayName, relationship;
+
+  /// The photo on Cloudinary (uploaded, or brought from Google sign-in); null: initials.
+  final String? avatarUrl;
 }
 
 class Me {
@@ -29,6 +36,14 @@ class Me {
       );
   final String id, email, fullName, language;
   final List<Profile> profiles;
+
+  /// The account holder's own photo (their "self" profile), if any.
+  String? get avatarUrl {
+    for (final p in profiles) {
+      if (p.relationship == 'self') return p.avatarUrl;
+    }
+    return null;
+  }
 
   String get firstName => fullName.trim().split(RegExp(r'\s+')).last;
   String get initials {
@@ -109,10 +124,14 @@ class FacilitySummary {
         nextSlotAt = _date(j['next_slot_at']),
         lat = (j['lat'] as num?)?.toDouble(),
         lng = (j['lng'] as num?)?.toDouble(),
+        coverUrl = j['cover_url'] as String?,
         insurers = _strings(j['insurers']).where((c) => c.isNotEmpty).toList();
   final String slug, name, type, district, sector;
   final bool emergency, openNow;
   final double? distanceKm, lat, lng;
+
+  /// The facility's own cover photo; null: the drawing.
+  final String? coverUrl;
   final int? waiting;
   final Estimate? waitRange;
   final String? queueLoad;
@@ -148,8 +167,12 @@ class Doctor {
         days = (j['days'] as List? ?? const []).whereType<int>().toList()..sort(),
         serviceIds = _strings(j['service_ids']),
         bio = _map(j['bio_i18n']),
-        languages = _strings(j['languages']);
+        languages = _strings(j['languages']),
+        photoUrl = j['photo_url'] as String?;
   final String id, name, specialty;
+
+  /// The doctor's own photo; null: initials.
+  final String? photoUrl;
 
   /// Weekdays they work here, 0 = Monday.
   final List<int> days;
@@ -178,8 +201,14 @@ class Facility {
         openNow = j['open_now'] as bool? ?? false,
         hours = (j['hours'] as List? ?? const []).map((row) => _strings(row)).toList(),
         services = _list(j['services']).map(FacilityService.fromJson).toList(),
-        doctors = _list(j['doctors']).map(Doctor.fromJson).toList();
+        doctors = _list(j['doctors']).map(Doctor.fromJson).toList(),
+        photos = _strings(j['photos']),
+        logoUrl = j['logo_url'] as String?;
   final String slug, name, type, address, phone, district, sector;
+
+  /// The facility's photos (the first is the cover) and logo.
+  final List<String> photos;
+  final String? logoUrl;
   final bool emergency, openNow;
   final Json description;
   final double? lat, lng;

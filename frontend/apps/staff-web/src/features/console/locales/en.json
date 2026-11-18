@@ -151,10 +151,8 @@
       "lastLogin": "Last sign-in",
       "since": "Account created"
     },
-    "patientNote": "This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them.",
     "access": {
       "title": "Facility access",
-      "lead": "Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access.",
       "none": "No facility access.",
       "active": "Active",
       "removed": "Access removed",
@@ -162,7 +160,11 @@
       "remove": "Remove access",
       "restore": "Restore access",
       "removeConfirm": "{{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are.",
-      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had."
+      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had.",
+      "roles": "Change roles",
+      "rolesTitle": "Roles at {{facility}}",
+      "rolesLegend": "Roles",
+      "saveRoles": "Save roles"
     },
     "invitations": "Invitations not accepted yet",
     "invited": "Sent {{sent}} · expires {{expires}}",
@@ -175,12 +177,11 @@
     "started": "Started {{time}}",
     "events": "Recent security events",
     "edit": "Correct details",
-    "editLead": "Correct the name, work phone or language. The email address and the password can't be changed here.",
     "fullName": "Full name",
     "phoneHint": "A Rwandan mobile number, for example 0788 123 456.",
     "save": "Save",
     "reason": "Reason",
-    "reasonHint": "Recorded in the audit log. At least 5 characters.",
+    "reasonHint": "At least 5 characters.",
     "actionsTitle": "Account actions",
     "actionsNote": "Each action asks you to confirm your identity again and is recorded with your reason.",
     "notice": {
@@ -222,7 +223,16 @@
       "send-password-reset": "Sent to {{email}}. Ask the person to check their inbox and spam folder.",
       "resend-verification": "Sent to {{email}}. Ask the person to check their inbox and spam folder."
     },
-    "clinician": "Clinician"
+    "clinician": "Clinician",
+    "team": {
+      "title": "Platform team",
+      "member": "This person runs the MediLink console: facilities, users and the logs.",
+      "notMember": "Platform admins run the MediLink console. Add only people who work for MediLink.",
+      "grant": "Add to platform team",
+      "revoke": "Remove from platform team",
+      "grantConfirm": "{{name}} gets full access to the MediLink console. They sign in with two-step login.",
+      "revokeConfirm": "{{name}} loses access to the console and is signed out everywhere."
+    }
   },
   "logs": {
     "event": "Event",
@@ -257,12 +267,10 @@
     },
     "security": {
       "title": "Security log",
-      "lead": "Sign-ins, two-step login, lockouts and admin actions on accounts.",
       "noun": "events"
     },
     "access": {
       "title": "Record access log",
-      "lead": "Who opened which record, with the reason given. Records are shown by reference only.",
       "noun": "accesses"
     }
   },

@@ -125,6 +125,7 @@ def staff_me_data(principal: Principal, session: Any = None) -> dict[str, Any]:
         "preferred_language": user.preferred_language,
         "is_platform_admin": user.is_platform_admin,
         "mfa_enabled": has_confirmed_mfa(user),
+        "photo_url": _own_photo(user),
         "memberships": [
             {
                 "facility": {
@@ -132,6 +133,7 @@ def staff_me_data(principal: Principal, session: Any = None) -> dict[str, Any]:
                     "name": m.facility.name,
                     "slug": m.facility.slug,
                     "facility_type": m.facility.facility_type,
+                    "logo_url": _active_logo(m.facility_id, principal.active_facility_id),
                 },
                 "roles": membership_roles(m),
             }
@@ -149,11 +151,44 @@ def staff_me_data(principal: Principal, session: Any = None) -> dict[str, Any]:
     }
 
 
+def _own_photo(user: User) -> str | None:
+    from medilink.accounts.models import ClinicianProfile
+    from medilink.images.services import image_url
+
+    avatar = (
+        ClinicianProfile.objects.filter(user_id=user.pk)
+        .values_list("avatar_public_id", flat=True)
+        .first()
+    )
+    return image_url(avatar, w=160, h=160)
+
+
+def _active_logo(facility_id: Any, active_id: Any) -> str | None:
+    """The active facility's logo (its profile is readable in the active facility's context)."""
+    if not active_id or facility_id != active_id:
+        return None
+    from medilink.facilities.models import Profile
+    from medilink.images.services import image_url
+
+    logo = (
+        Profile.objects.filter(facility_id=facility_id)
+        .values_list("logo_public_id", flat=True)
+        .first()
+    )
+    return image_url(logo, w=160, h=160, crop="pad")
+
+
 def _until(session: Any) -> Any:
     from medilink.authz.stepup import recent_auth_until
 
     until = recent_auth_until(session) if session is not None else None
     return datetime.fromtimestamp(until, tz=UTC) if until else None
+
+
+def _avatar(patient: Any) -> str | None:
+    from medilink.images.services import image_url
+
+    return image_url(getattr(patient, "avatar_public_id", ""), w=160, h=160)
 
 
 def patient_me_data(user: User) -> dict[str, Any]:
@@ -168,6 +203,7 @@ def patient_me_data(user: User) -> dict[str, Any]:
                 "patient_id": link.patient_id,
                 "display_name": link.patient.full_name,
                 "relationship": link.relationship,
+                "avatar_url": _avatar(link.patient),
             }
             for link in active_links(user)
         ],

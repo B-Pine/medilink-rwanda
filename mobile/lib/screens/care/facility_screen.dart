@@ -58,7 +58,12 @@ class FacilityScreen extends ConsumerWidget {
                   ColoredBox(color: FacilityBuilding.sky),
                   Hero(
                     tag: 'building-$slug',
-                    child: FacilityBuilding(type: type, emergency: emergency, fit: BoxFit.fitWidth),
+                    child: FacilityCover(
+                      url: f?.photos.firstOrNull ?? summary?.coverUrl,
+                      type: type,
+                      emergency: emergency,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                   const Positioned(left: 0, right: 0, bottom: -1, child: BandFoot()),
                 ],
@@ -89,7 +94,24 @@ class FacilityScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: Space.md),
-                    Text(f.name, style: theme.textTheme.headlineMedium),
+                    Row(
+                      children: [
+                        if (f.logoUrl != null) ...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(Space.radius),
+                            child: Image.network(
+                              f.logoUrl!,
+                              width: 44,
+                              height: 44,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, _, _) => const SizedBox.shrink(),
+                            ),
+                          ),
+                          const SizedBox(width: Space.md),
+                        ],
+                        Expanded(child: Text(f.name, style: theme.textTheme.headlineMedium)),
+                      ],
+                    ),
                     const SizedBox(height: Space.xs),
                     Text(f.address.isNotEmpty ? f.address : f.place, style: theme.textTheme.bodyMedium?.copyWith(color: Palette.muted)),
                     const SizedBox(height: Space.xl),
@@ -252,7 +274,7 @@ class _DoctorCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Avatar(name: doctor.name, initials: doctor.initials),
+              Avatar(name: doctor.name, initials: doctor.initials, photoUrl: doctor.photoUrl),
               const Spacer(),
               Text(doctor.name, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
               Text(doctor.specialty, style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),

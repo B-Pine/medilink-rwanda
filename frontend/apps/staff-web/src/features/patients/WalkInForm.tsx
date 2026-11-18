@@ -363,9 +363,6 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
         className="flex flex-col gap-3 self-start rounded-2xl border border-border/60 bg-raised p-4 lg:sticky lg:top-24"
       >
         <h2 className="m-0 font-heading text-h3">{t("patients.register.suggestions")}</h2>
-        {!duplicates && (
-          <p className="m-0 text-body-sm text-fg-muted">{t("patients.register.suggestionsHint")}</p>
-        )}
         {duplicates && duplicates.matches.length === 0 && !duplicates.external_match && (
           <p className="m-0 text-body-sm">{t("patients.register.noMatches")}</p>
         )}

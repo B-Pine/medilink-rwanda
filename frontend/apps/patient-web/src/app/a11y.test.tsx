@@ -80,11 +80,7 @@ describe("keyboard (F5)", () => {
     });
     await user.tab();
     expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveFocus();
-    // the emergency strip comes before the header: calling 912 is the first stop
-    await user.tab();
-    expect(screen.getAllByRole("link", { name: "Call 912" })[0]).toHaveFocus();
-    await user.tab();
-    expect(screen.getByRole("link", { name: "Emergency guide" })).toHaveFocus();
+    // no strip above the header any more: the logo, then the pages, then emergency
     await user.tab();
     expect(screen.getAllByRole("link", { name: "MediLink Rwanda home" })[0]).toHaveFocus();
   });

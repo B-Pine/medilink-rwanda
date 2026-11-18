@@ -114,7 +114,6 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t(`notifications.announcements.${scope}Title`)}
-        description={t(`notifications.announcements.${scope}Intro`)}
         actions={
           <Link to={`${base}/new`} className={buttonClassName({ variant: "primary" })}>
             <Plus aria-hidden="true" className="size-icon" />

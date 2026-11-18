@@ -66,6 +66,32 @@ export const INSURER_CODES = {
 export type InsurerKey = keyof typeof INSURER_CODES;
 export const INSURER_KEYS = Object.keys(INSURER_CODES) as InsurerKey[];
 
+/** Words people type for an insurer, in any language (the API knows the same ones). */
+export const INSURER_WORDS: Record<string, InsurerKey> = {
+  mutuelle: "mutuelle",
+  mituweli: "mutuelle",
+  cbhi: "mutuelle",
+  rama: "rama",
+  rssb: "rama",
+  mmi: "mmi",
+  military: "mmi",
+};
+
+/** The insurer named in a search, and the other words. */
+export function insurerInText(text: string): { insurer: InsurerKey | ""; rest: string } {
+  const words = text
+    .trim()
+    .toLowerCase()
+    .split(/[\s,;/]+/)
+    .filter(Boolean);
+  const index = words.findIndex((word) => INSURER_WORDS[word]);
+  if (index < 0) return { insurer: "", rest: words.join(" ") };
+  return {
+    insurer: INSURER_WORDS[words[index]!]!,
+    rest: words.filter((_, i) => i !== index).join(" "),
+  };
+}
+
 /** URL parameters of /search: choices only, never a location (contract D-2). */
 export function searchUrl(choice: { service?: string; district?: string; insurer?: string }) {
   const params = new URLSearchParams();

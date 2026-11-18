@@ -89,8 +89,7 @@
     "ask": "Demander un commentaire",
     "answered": "a répondu",
     "waiting": "en attente",
-    "yourComment": "Votre commentaire",
-    "commentHint": "On vous a demandé un commentaire. Seul le personnel le voit."
+    "yourComment": "Votre commentaire"
   },
   "decide": {
     "title": "Décision",

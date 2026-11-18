@@ -38,9 +38,22 @@ applications = [
 
 facilities = [
     path("", v.FacilitiesView.as_view(), name="platform-facilities"),
+    path("summary/", v.FacilitiesSummaryView.as_view(), name="platform-facilities-summary"),
     path("export/", v.FacilitiesExportView.as_view(), name="platform-facilities-export"),
     path(FAC, v.FacilityView.as_view(), name="platform-facility"),
     path(FAC + "status-events/", v.StatusEventsView.as_view(), name="platform-facility-events"),
+    path(FAC + "staff/", v.FacilityStaffView.as_view(), name="platform-facility-staff"),
+    path(
+        FAC + "invitations/",
+        v.FacilityInvitationsView.as_view(),
+        name="platform-facility-invitations",
+    ),
+    path(
+        FAC + "invitations/<uuid:invitation_id>/",
+        v.FacilityInvitationView.as_view(),
+        name="platform-facility-invitation",
+    ),
+    path(FAC + "details/", v.FacilityDetailsView.as_view(), name="platform-facility-details"),
     path(FAC + "start-setup/", v.StartSetupView.as_view(), name="platform-facility-start-setup"),
     path(FAC + "go-live/", v.GoLiveView.as_view(), name="platform-facility-go-live"),
     path(FAC + "suspend/", v.SuspendView.as_view(), name="platform-facility-suspend"),

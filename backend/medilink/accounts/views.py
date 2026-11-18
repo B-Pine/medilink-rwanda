@@ -196,13 +196,15 @@ class StaffLoginView(_AuthView):
             return _login_failure(request, email, "staff", "not_staff")
 
         login_policy().reset(email)
-        if dev_skip_staff_mfa():
-            # Local development only (DEBUG + DEV_SKIP_STAFF_MFA): no second factor.
-            principal = complete_staff_login(request, user, mfa_method="dev_skip")
+        skip = staff_mfa_skip_method()
+        if skip:
+            # No second factor: local development (DEBUG + DEV_SKIP_STAFF_MFA), or a platform
+            # admin turned staff two-step sign-in off (feature flag security.staff_mfa).
+            principal = complete_staff_login(request, user, mfa_method=skip)
             record(
                 actions.LOGIN_SUCCESS,
                 request=request,
-                metadata={"audience": "staff", "mfa_method": "dev_skip"},
+                metadata={"audience": "staff", "mfa_method": skip},
             )
             return Response(
                 LoginResultSerializer(
@@ -218,9 +220,32 @@ class StaffLoginView(_AuthView):
         return Response(LoginResultSerializer({"status": str(stage), "user": None}).data)
 
 
+def _import_google_photo(user: User, claims: google.GoogleClaims) -> None:
+    """The Google profile photo becomes the patient's photo when they have none (in the
+    background, after the sign-in is committed: it never slows or fails the sign-in)."""
+    if not claims.picture:
+        return
+    from medilink.images.tasks import import_google_photo
+
+    user_id, picture = str(user.pk), claims.picture
+    transaction.on_commit(lambda: import_google_photo.delay(user_id, picture))
+
+
 def dev_skip_staff_mfa() -> bool:
     """True only in DEBUG with DEV_SKIP_STAFF_MFA on (never in staging or production)."""
     return bool(settings.DEBUG and getattr(settings, "DEV_SKIP_STAFF_MFA", False))
+
+
+def staff_mfa_skip_method() -> str | None:
+    """Why staff sign in without a second factor, or None when the code is required:
+    "dev_skip" (local development) or "off_by_admin" (flag security.staff_mfa turned off)."""
+    if dev_skip_staff_mfa():
+        return "dev_skip"
+    from medilink.onboarding.flags import staff_mfa_off
+
+    if staff_mfa_off():
+        return "off_by_admin"
+    return None
 
 
 class StaffMfaSetupView(_AuthView):
@@ -712,6 +737,7 @@ class PatientGoogleView(_AuthView):
             verification.mark_verified(user)
         login_policy().reset(user.email)
         complete_patient_login(request, user)
+        _import_google_photo(user, claims)
         record(
             actions.LOGIN_SUCCESS,
             request=request,
@@ -781,6 +807,7 @@ class PatientGoogleView(_AuthView):
         )
         record(actions.GOOGLE_LINKED, request=request, actor=user, actor_role="patient")
         complete_patient_login(request, user)
+        _import_google_photo(user, claims)
         record(
             actions.LOGIN_SUCCESS,
             request=request,

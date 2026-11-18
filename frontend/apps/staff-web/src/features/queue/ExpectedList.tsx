@@ -229,7 +229,6 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
       <h3 id="missed-today" className="m-0 font-heading text-body font-semibold">
         {t("queue.board.missed")}
       </h3>
-      <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.missedHint")}</p>
       <ul
         aria-labelledby="missed-today"
         className="m-0 flex list-none flex-col divide-y divide-border/60 overflow-hidden rounded-2xl bg-surface/60 p-0 shadow-card"

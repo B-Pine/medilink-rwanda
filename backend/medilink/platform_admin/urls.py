@@ -26,9 +26,19 @@ urlpatterns = [
         name="platform-user-sign-in-unblock",
     ),
     path(
+        "users/<uuid:user_id>/facilities/<uuid:facility_id>/roles/",
+        v.FacilityRolesView.as_view(),
+        name="platform-user-facility-roles",
+    ),
+    path(
         "users/<uuid:user_id>/facilities/<uuid:facility_id>/<str:action>/",
         v.FacilityAccessView.as_view(),
         name="platform-user-facility-access",
+    ),
+    path(
+        "users/<uuid:user_id>/platform-admin/<str:action>/",
+        v.PlatformTeamView.as_view(),
+        name="platform-user-platform-team",
     ),
     path("users/<uuid:user_id>/lock/", v.LockUserView.as_view(), name="platform-user-lock"),
     path("users/<uuid:user_id>/unlock/", v.UnlockUserView.as_view(), name="platform-user-unlock"),

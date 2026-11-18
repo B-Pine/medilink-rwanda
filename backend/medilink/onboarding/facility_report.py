@@ -13,6 +13,7 @@ from collections import Counter
 from typing import Any
 
 from medilink.facilities.models import Profile
+from medilink.images.services import image_url
 from medilink.masterdata.models import Location
 from medilink.onboarding.models import Application
 from medilink.tenancy.context import rls_context
@@ -79,7 +80,15 @@ def facility_profile(facility: Facility) -> dict[str, Any]:
         "longitude": float(profile.longitude)
         if profile and profile.longitude is not None
         else None,
-        "photo_count": len(profile.photo_file_ids) if profile else 0,
+        "photo_count": (len(profile.photo_file_ids) + len(profile.photo_public_ids))
+        if profile
+        else 0,
+        "cover_url": image_url((profile.photo_public_ids or [""])[0], w=800, h=350)
+        if profile
+        else None,
+        "logo_url": image_url(profile.logo_public_id, w=160, h=160, crop="pad")
+        if profile
+        else None,
         "location": _location(village),
         "admins": admins,
         "staff_count": len(memberships),

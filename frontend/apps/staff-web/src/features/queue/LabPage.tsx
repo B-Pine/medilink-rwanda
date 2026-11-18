@@ -123,7 +123,6 @@ export function LabPage() {
             <PageHeading title={t("queue.lab.title")}>{t("queue.lab.title")}</PageHeading>
             <LiveBadge />
           </div>
-          <p className="m-0 text-fg-muted">{t("queue.lab.lead")}</p>
         </div>
       </header>
 

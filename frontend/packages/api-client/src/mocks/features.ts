@@ -9,6 +9,9 @@ import { onboardingMocks } from "./features/onboarding";
 import { securityMocks } from "./features/security";
 import { uploadsMocks } from "./features/uploads";
 // [/S1 imports]
+// [Cloudinary imports]
+import { imagesMocks } from "./features/images";
+// [/Cloudinary imports]
 // [S3 imports]
 import { patientsMocks } from "./features/patients";
 import { profileMocks } from "./features/profile";
@@ -73,6 +76,9 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   masterDataMocks,
   onboardingMocks,
   // [/S1]
+  // [Cloudinary]
+  imagesMocks,
+  // [/Cloudinary]
   // [S3]
   patientsMocks,
   profileMocks,

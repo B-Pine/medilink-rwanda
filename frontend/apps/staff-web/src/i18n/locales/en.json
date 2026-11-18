@@ -46,7 +46,6 @@
   },
   "mfaSetup": {
     "title": "Set up two-step login",
-    "intro": "Staff accounts need a second step at login to protect patient data.",
     "preparing": "Preparing your setup…",
     "setupFailed": "We could not start the setup. Log in again.",
     "step1Title": "1. Install an authenticator app",
@@ -85,7 +84,6 @@
   },
   "facility": {
     "title": "Choose your facility",
-    "intro": "You work at more than one facility. Choose where you are working now. You can switch at any time from the top bar.",
     "choose": "Work at {{name}}",
     "rolesLabel": "Your roles",
     "switcherLabel": "Current facility: {{name}}. Switch facility",
@@ -209,7 +207,7 @@
   "reset": {
     "title": "Set a new password",
     "newPassword": "New password",
-    "hint": "At least 12 characters. A short phrase is easy to remember and hard to guess.",
+    "hint": "At least 12 characters.",
     "submit": "Save new password",
     "doneTitle": "Password changed",
     "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",

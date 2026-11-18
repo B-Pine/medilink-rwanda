@@ -1,4 +1,5 @@
 import { http, HttpResponse } from "msw";
+import { mockFacilityLogos, mockImageExists, mockImageUrl, mockStaffAvatars } from "./images";
 
 import type {
   CalendarDay,
@@ -189,6 +190,10 @@ function seed() {
     latitude: "-1.970000",
     longitude: "30.100000",
     photos: [],
+    photo_public_ids: [],
+    photo_images: [],
+    logo_public_id: "",
+    logo_url: null,
     level_of_care: "primary",
     emergency_department: false,
     version: 3,
@@ -724,6 +729,38 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const { version: _v, ...fields } = data;
         if ("phone" in fields && str(fields.phone) && !/^\+2507\d{8}$/.test(str(fields.phone)))
           return fieldError(context, ok.lang, { phone: "Use +2507XXXXXXXX." });
+        // Cloudinary images: ids must come from an upload of the right kind (Admin API check)
+        if ("photo_public_ids" in fields) {
+          const ids = (Array.isArray(fields.photo_public_ids) ? fields.photo_public_ids : []).map(
+            String,
+          );
+          const held = new Set(db.facility.photo_public_ids);
+          if (ids.some((pid) => !held.has(pid) && !mockImageExists(pid, "facility_photo")))
+            return fieldError(context, ok.lang, {
+              photo_public_ids: "We couldn't find that image. Upload it again.",
+            });
+          if (ids.length + db.facility.photos.length > 6)
+            return fieldError(context, ok.lang, { photo_public_ids: "Up to 6 photos." });
+          fields.photo_public_ids = ids;
+          fields.photo_images = ids.map((pid) => ({
+            public_id: pid,
+            url: mockImageUrl(pid),
+            thumb_url: mockImageUrl(pid),
+          }));
+        }
+        if ("logo_public_id" in fields) {
+          const logo = str(fields.logo_public_id);
+          if (
+            logo &&
+            logo !== db.facility.logo_public_id &&
+            !mockImageExists(logo, "facility_logo")
+          )
+            return fieldError(context, ok.lang, {
+              logo_public_id: "We couldn't find that image. Upload it again.",
+            });
+          fields.logo_url = mockImageUrl(logo);
+          mockFacilityLogos.set(db.facility.id, logo);
+        }
         const before = { ...db.facility } as Record<string, unknown>;
         db.facility = {
           ...db.facility,
@@ -737,7 +774,8 @@ export const setupMocks: FeatureMockFactory = (context) => {
         await context.settle();
         const ok = guard(request, ["facility.configure"]);
         if (ok instanceof Response) return ok;
-        if (db.facility.photos.length >= 6) return rule(context, ok.lang);
+        if (db.facility.photos.length + db.facility.photo_public_ids.length >= 6)
+          return rule(context, ok.lang);
         db.facility = { ...db.facility, photos: [...db.facility.photos, id()] };
         return HttpResponse.json(db.facility, { status: 201 });
       }),
@@ -1690,11 +1728,31 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const bio: ClinicianPublicProfile["bio_i18n"] = {};
         for (const [k, v] of Object.entries(data.bio_i18n ?? {}))
           if (String(v).trim()) bio[k as keyof typeof bio] = String(v).trim();
+        const avatarOnly = "avatar_public_id" in data;
+        let avatar = db.clinicianPublic.avatar_public_id ?? "";
+        if (avatarOnly) {
+          const next = str(data.avatar_public_id);
+          if (next && next !== avatar && !mockImageExists(next, "provider_avatar"))
+            return fieldError(context, ok.lang, {
+              avatar_public_id: "We couldn't find that image. Upload it again.",
+            });
+          avatar = next;
+        }
+        // a PATCH with the photo changes only what it sends
         db.clinicianPublic = {
-          bio_i18n: bio,
-          languages: [...new Set(data.languages ?? [])].sort(),
-          is_public: data.is_public ?? true,
+          bio_i18n: avatarOnly && !("bio_i18n" in data) ? db.clinicianPublic.bio_i18n : bio,
+          languages:
+            avatarOnly && !("languages" in data)
+              ? db.clinicianPublic.languages
+              : [...new Set(data.languages ?? [])].sort(),
+          is_public:
+            avatarOnly && !("is_public" in data)
+              ? db.clinicianPublic.is_public
+              : (data.is_public ?? true),
+          avatar_public_id: avatar,
+          photo_url: mockImageUrl(avatar),
         };
+        mockStaffAvatars.set(ok.email, avatar);
         return HttpResponse.json({ ...db.clinicianPublic, specialty: db.clinician.specialty });
       }),
       http.post(`${api}/staff/auth/invitations/lookup/`, async ({ request }) => {

@@ -10,6 +10,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Platform management of facilities and people (2026-11-18)
 
+- Fixed: facility photos didn't show on the public search cards. The listing's cover is now the
+  first Cloudinary photo, else the first clean scanned photo (`cover_url` may be the public photo
+  path on this host); saving or removing photos rebuilds that facility's listing at once instead of
+  waiting for the background refresh. New `manage.py refresh_listing` rebuilds every live facility
+  now.
+
 - Added: `GET /api/v1/platform/facilities/summary/` (counts by status, without a facility admin,
   licences expiring, expired or missing, without a FOSA ID) and the list filter `no_admin=true`;
   facility rows give `cover_url` and `logo_url`.

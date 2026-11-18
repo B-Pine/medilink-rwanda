@@ -78,7 +78,7 @@ export function contentSecurityPolicy({
     `style-src 'self' 'unsafe-inline'${googleSignIn ? " https://accounts.google.com/gsi/style" : ""}`,
     // map tiles come from one configured origin (upgrade 03 §2, OD-3); photos (facility, doctor,
     // patient) from Cloudinary's delivery host
-    `img-src 'self' data: ${tiles} ${CLOUDINARY_DELIVERY}`,
+    `img-src 'self' data: ${tiles} ${CLOUDINARY_DELIVERY} ${CLOUDINARY_UPLOAD}`,
     "font-src 'self'",
     // photo uploads go from the browser straight to Cloudinary, signed by the API
     `connect-src 'self' ${api.origin} ${ws}${gsi} ${CLOUDINARY_UPLOAD}`,

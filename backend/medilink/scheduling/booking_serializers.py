@@ -69,7 +69,8 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     referral_hint = serializers.BooleanField()
     lat = serializers.FloatField(allow_null=True)
     lng = serializers.FloatField(allow_null=True)
-    cover_url = serializers.URLField(allow_null=True)
+    # a Cloudinary URL, or the public photo path on this host for a scanned photo
+    cover_url = serializers.CharField(allow_null=True)
 
 
 class FacilitySearchPageSerializer(serializers.Serializer):

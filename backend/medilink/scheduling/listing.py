@@ -145,6 +145,43 @@ def _hours(facility_id: Any, start: dt.date) -> list[list[Any]]:
     ]
 
 
+UPLOAD_COVER = "upload:"
+
+
+def _cover(facility_id: Any, profile: Profile | None) -> str:
+    """The card's cover: the first Cloudinary photo, else the first clean scanned photo (stored as
+    "upload:<id>"), else "" (the card draws the facility)."""
+    if profile is None:
+        return ""
+    if profile.photo_public_ids:
+        return str(profile.photo_public_ids[0])
+    if profile.photo_file_ids:
+        from medilink.uploads.models import ScanStatus, UploadedFile
+
+        clean = set(
+            UploadedFile.objects.filter(
+                pk__in=profile.photo_file_ids,
+                facility_id=facility_id,
+                purpose="facility_photo",
+                scan_status=ScanStatus.CLEAN,
+                deleted_at__isnull=True,
+            ).values_list("pk", flat=True)
+        )
+        for pk in profile.photo_file_ids:
+            if pk in clean:
+                return f"{UPLOAD_COVER}{pk}"
+    return ""
+
+
+def cover_url(slug: str, cover: str) -> str | None:
+    """A delivery URL for a listing cover: Cloudinary, or the public photo redirect (same host)."""
+    if not cover:
+        return None
+    if cover.startswith(UPLOAD_COVER):
+        return f"/api/v1/public/facilities/{slug}/photos/{cover[len(UPLOAD_COVER) :]}/"
+    return image_url(cover, w=800, h=350)
+
+
 def refresh(facility_id: Any) -> int:
     """Rebuild the listing rows of one facility (inside its RLS context). Facilities that are not
     live lose their rows."""
@@ -190,7 +227,7 @@ def refresh(facility_id: Any) -> int:
                 level_of_care=(profile.level_of_care if profile else "")
                 or LEVEL_BY_TYPE.get(str(facility.facility_type), ""),
                 emergency_department=bool(profile and profile.emergency_department),
-                cover_public_id=(profile.photo_public_ids or [""])[0] if profile else "",
+                cover_public_id=_cover(facility_id, profile),
                 latitude=profile.latitude if profile else None,
                 longitude=profile.longitude if profile else None,
                 service_id=service.pk,
@@ -316,7 +353,7 @@ def search(query: Query) -> dict[str, Any]:
                 "lat": float(row.latitude) if row.latitude is not None else None,
                 "lng": float(row.longitude) if row.longitude is not None else None,
                 # the facility's own cover photo (Cloudinary); the cards draw one without it
-                "cover_url": image_url(row.cover_public_id, w=800, h=350),
+                "cover_url": cover_url(row.facility_slug, row.cover_public_id),
             }
         )
     if query.near:

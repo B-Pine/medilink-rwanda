@@ -11,7 +11,7 @@ from rest_framework import serializers
 
 from medilink.accounts.models import Language
 from medilink.masterdata.kinds import localise
-from medilink.masterdata.models import Location, LocationLevel, ReasonCode
+from medilink.masterdata.models import LevelOfCare, Location, LocationLevel, ReasonCode
 from medilink.onboarding import services
 from medilink.onboarding.models import (
     ActorKind,
@@ -29,7 +29,7 @@ from medilink.onboarding.models import (
     LicenceKind,
     NoteKind,
 )
-from medilink.tenancy.models import Facility, FacilityStatus, FacilityType, Ownership
+from medilink.tenancy.models import Facility, FacilityStatus, FacilityType, Ownership, RoleCode
 from medilink.uploads.serializers import UploadSerializer
 
 LICENCE_STATES = ["valid", "expiring", "expired", "missing"]
@@ -441,6 +441,8 @@ class PlatformFacilitySerializer(serializers.Serializer):
     latitude = serializers.FloatField(allow_null=True)
     longitude = serializers.FloatField(allow_null=True)
     photo_count = serializers.IntegerField()
+    cover_url = serializers.URLField(allow_null=True)  # Cloudinary cover photo
+    logo_url = serializers.URLField(allow_null=True)
     location = FacilityPlaceSerializer()
     admins = FacilityContactSerializer(many=True)
     staff_count = serializers.IntegerField()
@@ -454,6 +456,66 @@ class PlatformFacilitySerializer(serializers.Serializer):
     next_licence_expiry = serializers.DateField(allow_null=True)
     created_at = serializers.DateTimeField()
     version = serializers.IntegerField()
+
+
+class FacilityAttentionSerializer(serializers.Serializer):
+    """Counts for the facility list's "needs attention" strip."""
+
+    total = serializers.IntegerField()
+    by_status = serializers.DictField(child=serializers.IntegerField())
+    no_admin = serializers.IntegerField()
+    licence_expiring = serializers.IntegerField()
+    licence_expired = serializers.IntegerField()
+    licence_missing = serializers.IntegerField()
+    missing_code = serializers.IntegerField()
+
+
+class FacilityStaffMemberSerializer(serializers.Serializer):
+    membership_id = serializers.UUIDField()
+    user_id = serializers.UUIDField()
+    name = serializers.CharField()
+    email = serializers.CharField()
+    roles = serializers.ListField(child=serializers.CharField())
+    is_active = serializers.BooleanField()
+    mfa_enabled = serializers.BooleanField()
+    last_login = serializers.DateTimeField(allow_null=True)
+    joined_at = serializers.DateTimeField()
+
+
+class FacilityInvitationRowSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    email = serializers.CharField()
+    full_name = serializers.CharField(allow_blank=True)
+    role_codes = serializers.ListField(child=serializers.CharField())
+    status = serializers.CharField()
+    invited_by = serializers.CharField(allow_blank=True)
+    created_at = serializers.DateTimeField()
+    expires_at = serializers.DateTimeField()
+
+
+class FacilityStaffSerializer(serializers.Serializer):
+    members = FacilityStaffMemberSerializer(many=True)
+    invitations = FacilityInvitationRowSerializer(many=True)
+
+
+class FacilityInviteInput(StrictSerializer):
+    email = serializers.EmailField(max_length=254)
+    full_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    role_codes = serializers.ListField(
+        child=serializers.ChoiceField(choices=RoleCode.choices), min_length=1, max_length=7
+    )
+    reason = serializers.CharField(min_length=5, max_length=500)
+
+
+class FacilityDetailsInput(StrictSerializer):
+    """Platform-managed facts: what the facility can't change itself (settings say "ask MediLink
+    support"). Each change needs a reason; the web address (slug) never changes."""
+
+    name = serializers.CharField(min_length=2, max_length=200, required=False)
+    facility_type = serializers.ChoiceField(choices=FacilityType.choices, required=False)
+    ownership = serializers.ChoiceField(choices=Ownership.choices, required=False)
+    level_of_care = serializers.ChoiceField(choices=LevelOfCare.choices, required=False)
+    reason = serializers.CharField(min_length=5, max_length=500)
 
 
 class LicenceSerializer(serializers.Serializer):

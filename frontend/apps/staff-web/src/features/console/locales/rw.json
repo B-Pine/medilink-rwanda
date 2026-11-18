@@ -154,7 +154,7 @@
     "patientNote": "This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them.",
     "access": {
       "title": "Uburenganzira ku bigo",
-      "lead": "Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access.",
+      "lead": "Aho uyu muntu akora n'ibyo ashobora gukora aho. Ushobora guhindura inshingano ze, cyangwa kumukuraho no kumusubiza uburenganzira.",
       "none": "Nta kigo afitiye uburenganzira.",
       "active": "Arakora",
       "removed": "Uburenganzira bwakuweho",
@@ -162,7 +162,12 @@
       "remove": "Kuraho uburenganzira",
       "restore": "Subizaho uburenganzira",
       "removeConfirm": "{{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are.",
-      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had."
+      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had.",
+      "roles": "Hindura inshingano",
+      "rolesTitle": "Inshingano muri {{facility}}",
+      "rolesLead": "Ibyo {{name}} ashobora gukora aho. Ikigo gihora gifite nibura umuyobozi umwe.",
+      "rolesLegend": "Inshingano",
+      "saveRoles": "Bika inshingano"
     },
     "invitations": "Ubutumire butaremezwa",
     "invited": "Bwoherejwe {{sent}} · buzarangira {{expires}}",
@@ -222,7 +227,16 @@
       "send-password-reset": "Sent to {{email}}. Ask the person to check their inbox and spam folder.",
       "resend-verification": "Sent to {{email}}. Ask the person to check their inbox and spam folder."
     },
-    "clinician": "Umuvuzi"
+    "clinician": "Umuvuzi",
+    "team": {
+      "title": "Itsinda rya platform",
+      "member": "Uyu muntu ayobora konsole ya MediLink: ibigo, abakoresha n'ibitabo by'ibikorwa.",
+      "notMember": "Abayobozi ba platform bayobora konsole ya MediLink. Ongeramo gusa abakorera MediLink.",
+      "grant": "Shyira mu itsinda",
+      "revoke": "Kura mu itsinda",
+      "grantConfirm": "{{name}} abona uburenganzira bwose kuri konsole ya MediLink. Yinjira mu ntambwe ebyiri.",
+      "revokeConfirm": "{{name}} atakaza uburenganzira kuri konsole kandi asohorwa ahantu hose."
+    }
   },
   "logs": {
     "event": "Event",

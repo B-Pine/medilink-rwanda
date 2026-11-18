@@ -896,6 +896,108 @@ class FacilityAccessView(_Action):
         return Response(s.UserDetailSerializer(_detail(user)).data)
 
 
+class FacilityRolesView(_Action):
+    """Change a person's roles at one facility, for example when its only facility admin left and
+    someone else must take over. The facility keeps at least one active facility admin."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_facility_roles",
+        request=s.RolesInput,
+        responses={200: s.UserDetailSerializer},
+        summary="Set a person's roles at a facility; step-up, reason, audit-logged",
+    )
+    def post(self, request: Request, user_id: Any, facility_id: Any) -> Response:
+        from medilink.facilities import staff
+
+        user = self.target(request, user_id)
+        body = s.RolesInput(data=request.data)
+        body.is_valid(raise_exception=True)
+        roles = sorted(set(body.validated_data["role_codes"]))
+        with rls_context(facility_id=facility_id):
+            membership = (
+                FacilityMembership.objects.filter(facility_id=facility_id, user=user)
+                .select_related("facility")
+                .first()
+            )
+            if membership is None:
+                raise Http404
+            before = sorted(membership.roles.values_list("code", flat=True))
+            staff.update_membership(
+                membership,
+                {"version": membership.version, "role_codes": roles},
+                actor=request.user,
+                request=request,
+            )
+        record(
+            "platform.user.roles_changed",
+            request=request,
+            facility_id=facility_id,
+            object_type="user",
+            object_id=user.pk,
+            reason=body.validated_data["reason"],
+            metadata={"before": before, "after": roles},
+        )
+        return Response(s.UserDetailSerializer(_detail(user)).data)
+
+
+class PlatformTeamView(_Action):
+    """Add a person to the platform team or take them off it. Never your own account, never the
+    last platform admin; leaving the team ends the person's sessions."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_platform_team",
+        parameters=[
+            OpenApiParameter("action", str, OpenApiParameter.PATH, enum=["grant", "revoke"])
+        ],
+        request=s.AccountReasonSerializer,
+        responses={200: s.UserDetailSerializer},
+        summary="Grant or revoke platform admin; step-up, reason, audit-logged",
+    )
+    def post(self, request: Request, user_id: Any, action: str) -> Response:
+        from medilink.patients.services import has_patient_profile
+
+        if action not in ("grant", "revoke"):
+            raise Http404
+        user = self.target(request, user_id)
+        reason = self.reason(request)
+        if action == "grant":
+            if not user.is_active:
+                raise BusinessRuleViolation("Unlock the account first.")
+            with rls_context(user_id=user.pk):
+                patient = has_patient_profile(user)
+            if patient:
+                raise BusinessRuleViolation(
+                    "This is a patient account. Invite a separate staff account instead."
+                )
+            if not user.is_platform_admin:
+                user.is_platform_admin = True
+                user.save(update_fields=["is_platform_admin"])
+                record(
+                    "platform.user.platform_admin_granted",
+                    request=request,
+                    object_type="user",
+                    object_id=user.pk,
+                    reason=reason,
+                )
+        elif user.is_platform_admin:
+            others = User.objects.filter(is_platform_admin=True, is_active=True).exclude(pk=user.pk)
+            if not others.exists():
+                raise BusinessRuleViolation("The platform needs at least one platform admin.")
+            user.is_platform_admin = False
+            user.save(update_fields=["is_platform_admin"])
+            revoke_all_sessions(user)  # their console sessions end now
+            record(
+                "platform.user.platform_admin_revoked",
+                request=request,
+                object_type="user",
+                object_id=user.pk,
+                reason=reason,
+            )
+        return Response(s.UserDetailSerializer(_detail(user)).data)
+
+
 # ---- logs -------------------------------------------------------------------------------------
 
 _LOG_PARAMS = [

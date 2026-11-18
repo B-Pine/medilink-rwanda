@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6311.
+Keys: 6359.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1540,7 +1540,7 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `users.facts.since` | Konti yafunguwe | Account created | needs native-speaker review |
 | `users.patientNote` | This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them. | This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them. | needs native-speaker review |
 | `users.access.title` | Uburenganzira ku bigo | Facility access | needs native-speaker review |
-| `users.access.lead` | Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access. | Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access. | needs native-speaker review |
+| `users.access.lead` | Aho uyu muntu akora n'ibyo ashobora gukora aho. Ushobora guhindura inshingano ze, cyangwa kumukuraho no kumusubiza uburenganzira. | Where this person works and what they can do there. You can change their roles, or remove and restore access. | needs native-speaker review |
 | `users.access.none` | Nta kigo afitiye uburenganzira. | No facility access. | needs native-speaker review |
 | `users.access.active` | Arakora | Active | needs native-speaker review |
 | `users.access.removed` | Uburenganzira bwakuweho | Access removed | needs native-speaker review |
@@ -1549,6 +1549,11 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `users.access.restore` | Subizaho uburenganzira | Restore access | needs native-speaker review |
 | `users.access.removeConfirm` | {{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are. | {{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are. | needs native-speaker review |
 | `users.access.restoreConfirm` | {{name}} can work at {{facility}} again, with the roles they had. | {{name}} can work at {{facility}} again, with the roles they had. | needs native-speaker review |
+| `users.access.roles` | Hindura inshingano | Change roles | needs native-speaker review |
+| `users.access.rolesTitle` | Inshingano muri {{facility}} | Roles at {{facility}} | needs native-speaker review |
+| `users.access.rolesLead` | Ibyo {{name}} ashobora gukora aho. Ikigo gihora gifite nibura umuyobozi umwe. | What {{name}} can do there. The facility always keeps at least one facility admin. | needs native-speaker review |
+| `users.access.rolesLegend` | Inshingano | Roles | needs native-speaker review |
+| `users.access.saveRoles` | Bika inshingano | Save roles | needs native-speaker review |
 | `users.invitations` | Ubutumire butaremezwa | Invitations not accepted yet | needs native-speaker review |
 | `users.invited` | Bwoherejwe {{sent}} · buzarangira {{expires}} | Sent {{sent}} · expires {{expires}} | needs native-speaker review |
 | `users.changes` | Ibyahinduwe n’abayobozi | Changes by admins | needs native-speaker review |
@@ -1598,6 +1603,13 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `users.done.send-password-reset` | Sent to {{email}}. Ask the person to check their inbox and spam folder. | Sent to {{email}}. Ask the person to check their inbox and spam folder. | needs native-speaker review |
 | `users.done.resend-verification` | Sent to {{email}}. Ask the person to check their inbox and spam folder. | Sent to {{email}}. Ask the person to check their inbox and spam folder. | needs native-speaker review |
 | `users.clinician` | Umuvuzi | Clinician | needs native-speaker review |
+| `users.team.title` | Itsinda rya platform | Platform team | needs native-speaker review |
+| `users.team.member` | Uyu muntu ayobora konsole ya MediLink: ibigo, abakoresha n'ibitabo by'ibikorwa. | This person runs the MediLink console: facilities, users and the logs. | needs native-speaker review |
+| `users.team.notMember` | Abayobozi ba platform bayobora konsole ya MediLink. Ongeramo gusa abakorera MediLink. | Platform admins run the MediLink console. Add only people who work for MediLink. | needs native-speaker review |
+| `users.team.grant` | Shyira mu itsinda | Add to platform team | needs native-speaker review |
+| `users.team.revoke` | Kura mu itsinda | Remove from platform team | needs native-speaker review |
+| `users.team.grantConfirm` | {{name}} abona uburenganzira bwose kuri konsole ya MediLink. Yinjira mu ntambwe ebyiri. | {{name}} gets full access to the MediLink console. They sign in with two-step login. | needs native-speaker review |
+| `users.team.revokeConfirm` | {{name}} atakaza uburenganzira kuri konsole kandi asohorwa ahantu hose. | {{name}} loses access to the console and is signed out everywhere. | needs native-speaker review |
 | `logs.event` | Event | Event | needs native-speaker review |
 | `logs.who` | Who | Who | needs native-speaker review |
 | `logs.device` | Device and IP | Device and IP | needs native-speaker review |
@@ -3150,6 +3162,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `facilities.tabs.licences` | Impushya | Licences | needs native-speaker review |
 | `facilities.tabs.history` | Amateka | History | needs native-speaker review |
 | `facilities.tabs.flags` | Imikorere | Feature flags | needs native-speaker review |
+| `facilities.tabs.staff` | Abakozi | Staff | needs native-speaker review |
 | `facilities.actions.start-setup` | Tangira gutegura | Start setup | needs native-speaker review |
 | `facilities.actions.go-live` | Tangira gukora | Go live | needs native-speaker review |
 | `facilities.actions.suspend` | Hagarika | Suspend | needs native-speaker review |
@@ -3181,6 +3194,41 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `facilities.identity` | Ibiranga ikigo | Identity | needs native-speaker review |
 | `facilities.contact` | Aho babarizwa n’aho kiri | Contact and place | needs native-speaker review |
 | `facilities.professionUnknown` | Umwuga ntiwatanzwe | Profession not given | needs native-speaker review |
+| `facilities.noAdminFilter` | Nta muyobozi | No facility admin | needs native-speaker review |
+| `facilities.attention` | Bikeneye kwitabwaho: | Needs attention: | needs native-speaker review |
+| `facilities.attentionItems.noAdmin_one` | {{count}} nta muyobozi | {{count}} without a facility admin | needs native-speaker review |
+| `facilities.attentionItems.noAdmin_other` | {{count}} nta muyobozi | {{count}} without a facility admin | needs native-speaker review |
+| `facilities.attentionItems.expired_one` | Uruhushya {{count}} rwarangiye | {{count}} licence expired | needs native-speaker review |
+| `facilities.attentionItems.expired_other` | Impushya {{count}} zarangiye | {{count}} licences expired | needs native-speaker review |
+| `facilities.attentionItems.expiring_one` | Uruhushya {{count}} rugiye kurangira | {{count}} licence expiring | needs native-speaker review |
+| `facilities.attentionItems.expiring_other` | Impushya {{count}} zigiye kurangira | {{count}} licences expiring | needs native-speaker review |
+| `facilities.attentionItems.missingCode_one` | {{count}} nta nomero ya FOSA | {{count}} without a FOSA ID | needs native-speaker review |
+| `facilities.attentionItems.missingCode_other` | {{count}} nta nomero ya FOSA | {{count}} without a FOSA ID | needs native-speaker review |
+| `facilities.edit` | Hindura | Edit details | needs native-speaker review |
+| `facilities.more` | Ibindi bikorwa | More actions | needs native-speaker review |
+| `facilities.noAdminAlert` | Nta wushobora kuyobora iki kigo: nta muyobozi ukora gifite. Mutumire mu gice cy'Abakozi. | Nobody can run this facility: it has no active facility admin. Invite one from the Staff tab. | needs native-speaker review |
+| `facilities.staffTitle` | Abafite uburenganzira | People with access | needs native-speaker review |
+| `facilities.staffHint` | Fungura umuntu kugira ngo uhindure inshingano ze cyangwa umukureho uburenganzira. | Open a person to change their roles or remove their access. | needs native-speaker review |
+| `facilities.invite` | Tumira | Invite | needs native-speaker review |
+| `facilities.noStaff` | Nta muntu urabona uburenganzira. | Nobody has access yet. | needs native-speaker review |
+| `facilities.twoStepOn` | Intambwe ebyiri zirakora | Two-step on | needs native-speaker review |
+| `facilities.twoStepOff` | Intambwe ebyiri ntizikora | Two-step off | needs native-speaker review |
+| `facilities.removed` | Uburenganzira bwakuweho | Access removed | needs native-speaker review |
+| `facilities.pending_one` | Ubutumire {{count}} butegereje | {{count}} pending invitation | needs native-speaker review |
+| `facilities.pending_other` | Ubutumire {{count}} butegereje | {{count}} pending invitations | needs native-speaker review |
+| `facilities.expires` | Burarangira {{when}} | Expires {{when}} | needs native-speaker review |
+| `facilities.cancelInvite` | Hagarika | Cancel | needs native-speaker review |
+| `facilities.inviteTitle` | Tumira umuntu muri {{name}} | Invite someone to {{name}} | needs native-speaker review |
+| `facilities.inviteHint` | Ahabwa umuyoboro kuri imeri wo gufungura konti cyangwa kwinjira akoresheje iyo afite. Umuyoboro umara iminsi 7. | They get an email link to create their account or join with an existing one. The link works for 7 days. | needs native-speaker review |
+| `facilities.cancel` | Reka | Cancel | needs native-speaker review |
+| `facilities.sendInvite` | Ohereza ubutumire | Send invitation | needs native-speaker review |
+| `facilities.fullName` | Amazina yose | Full name | needs native-speaker review |
+| `facilities.roles` | Inshingano | Roles | needs native-speaker review |
+| `facilities.reasonHint` | Byandikwa mu bubiko bw'igenzura, urugero: "Umuyobozi yagiye; ubuyobozi bwabisabye." | Recorded in the audit log, e.g. "The facility admin left; the director asked for this." | needs native-speaker review |
+| `facilities.editTitle` | Hindura amakuru y'ikigo | Edit facility details | needs native-speaker review |
+| `facilities.editHint` | Aya makuru ava mu busabe bwemewe; ikigo ntigishobora kuyahindura. Buri mpinduka yandikwa n'impamvu yawe. | These come from the approved application; the facility can't change them. Each change is recorded with your reason. | needs native-speaker review |
+| `facilities.saveDetails` | Bika impinduka | Save changes | needs native-speaker review |
+| `facilities.slugFixed` | Aderesi ya interineti iguma ari {{slug}}: imiyoboro abantu basanganywe ikomeza gukora. | The web address stays {{slug}}: links people already have keep working. | needs native-speaker review |
 | `licences.add` | Ongeraho uruhushya | Add licence | needs native-speaker review |
 | `licences.renew` | Vugurura | Renew | needs native-speaker review |
 | `licences.correct` | Kosora | Correct | needs native-speaker review |

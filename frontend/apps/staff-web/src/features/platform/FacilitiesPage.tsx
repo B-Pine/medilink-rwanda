@@ -1,6 +1,8 @@
 import {
   isApiError,
   type FacilityAction,
+  type FacilityDetailsUpdate,
+  type RoleCode,
   type FacilityFeatureFlag,
   type Licence,
   type LicenceKind,
@@ -17,15 +19,21 @@ import {
   DataTable,
   Dialog,
   LoadingState,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
   SelectField,
   SwitchField,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
+  TextareaField,
   TextField,
   Timeline,
   buttonClassName,
+  cx,
   type ColumnDef,
 } from "@medilink/ui";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -33,9 +41,22 @@ import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 
+import {
+  ArrowLeft,
+  DotsThree,
+  EnvelopeSimple,
+  Pause,
+  PencilSimple,
+  Prohibit,
+  UserPlus,
+  WarningCircle,
+} from "@phosphor-icons/react";
+
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { env } from "../../env";
+import { roleLabel } from "../../facility/labels";
+import { Avatar, StatusDot, useRelative } from "../console/shared";
 import { useStepUp } from "../lock";
 import { ReasonSelect, useReasons } from "./ApplicationReviewPage";
 import {
@@ -67,6 +88,7 @@ function Facilities() {
   const facilityType = params.get("facility_type") ?? "";
   const ownership = params.get("ownership") ?? "";
   const missingCode = params.get("missing_code") === "true";
+  const noAdmin = params.get("no_admin") === "true";
   const q = params.get("q") ?? "";
   const page = Number(params.get("page") ?? 1);
   const labels = useTableLabels(t("platform.facilities.noun"));
@@ -88,6 +110,7 @@ function Facilities() {
       facilityType,
       ownership,
       missingCode,
+      noAdmin,
       q,
       page,
     ],
@@ -98,12 +121,18 @@ function Facilities() {
         facility_type: facilityType,
         ownership,
         ...(missingCode ? { missing_code: true } : {}),
+        ...(noAdmin ? { no_admin: true } : {}),
         q,
         page,
         page_size: 50,
       }),
     placeholderData: keepPreviousData,
   });
+  const summary = useQuery({
+    queryKey: ["platform", "facilities", "summary"],
+    queryFn: () => api.onboarding.platform.facilitiesSummary(),
+  });
+  const counts = summary.data;
   const columns = useMemo<ColumnDef<PlatformFacility, unknown>[]>(
     () => [
       {
@@ -112,12 +141,15 @@ function Facilities() {
         meta: { cellClassName: "min-w-52 whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="flex flex-col">
-            <span className="font-semibold">{row.original.name}</span>
-            <span className="text-body-sm text-fg-muted">
-              {row.original.moh_facility_code
-                ? `FOSA ${row.original.moh_facility_code}`
-                : t("platform.facilities.noCode")}
+          <span className="flex items-center gap-3">
+            <FacilityMark facility={row.original} />
+            <span className="flex min-w-0 flex-col">
+              <span className="font-semibold text-fg">{row.original.name}</span>
+              <span className="text-body-sm text-fg-muted">
+                {row.original.moh_facility_code
+                  ? `FOSA ${row.original.moh_facility_code}`
+                  : t("platform.facilities.noCode")}
+              </span>
             </span>
           </span>
         ),
@@ -176,7 +208,10 @@ function Facilities() {
               <span className="text-body-sm text-fg-muted">{admin.phone || admin.email}</span>
             </span>
           ) : (
-            <span className="text-fg-muted">{t("platform.facilities.noAdmin")}</span>
+            <span className="inline-flex items-center gap-1.5 font-semibold text-attention">
+              <WarningCircle aria-hidden="true" weight="fill" className="size-4" />
+              {t("platform.facilities.noAdmin")}
+            </span>
           );
         },
       },
@@ -235,7 +270,26 @@ function Facilities() {
           },
         ]
       : []),
+    ...(noAdmin
+      ? [
+          {
+            id: "no_admin",
+            label: t("platform.facilities.noAdminFilter"),
+            onRemove: () => update({ no_admin: "" }),
+          },
+        ]
+      : []),
   ];
+  const attention = counts
+    ? (
+        [
+          ["noAdmin", counts.no_admin, { no_admin: "true" }],
+          ["expired", counts.licence_expired, { licence_state: "expired" }],
+          ["expiring", counts.licence_expiring, { licence_state: "expiring" }],
+          ["missingCode", counts.missing_code, { missing_code: "true" }],
+        ] as const
+      ).filter(([, count]) => count > 0)
+    : [];
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
@@ -252,6 +306,52 @@ function Facilities() {
           />
         }
       />
+      <div className="flex flex-col gap-3">
+        <div
+          role="group"
+          aria-label={t("platform.applications.status")}
+          className="inline-flex max-w-full flex-wrap gap-1 self-start rounded-full bg-subtle p-1"
+        >
+          {STATUS_TABS.map((key) => {
+            const count = counts
+              ? key === ""
+                ? counts.total
+                : (counts.by_status[key] ?? 0)
+              : undefined;
+            return (
+              <button
+                key={key || "all"}
+                type="button"
+                aria-pressed={status === key}
+                onClick={() => update({ status: key })}
+                className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full px-4 text-body-sm font-semibold text-fg-secondary transition-[background-color,color,box-shadow] duration-200 ease-out-quint hover:text-fg aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card"
+              >
+                {key ? t(`platform.status.facility.${key}`) : t("platform.applications.all")}
+                {count !== undefined && (
+                  <span className="font-normal text-fg-muted tabular-nums">
+                    {count.toLocaleString()}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        {attention.length > 0 && (
+          <p className="m-0 flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+            <span className="text-fg-secondary">{t("platform.facilities.attention")}</span>
+            {attention.map(([key, count, next]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => update({ ...next })}
+                className="cursor-pointer font-semibold text-link underline-offset-2 hover:underline"
+              >
+                {t(`platform.facilities.attentionItems.${key}`, { count })}
+              </button>
+            ))}
+          </p>
+        )}
+      </div>
       <DataTable<PlatformFacility>
         caption={t("platform.facilities.title")}
         columns={columns}
@@ -272,23 +372,12 @@ function Facilities() {
             facility_type: "",
             ownership: "",
             missing_code: "",
+            no_admin: "",
             q: "",
           })
         }
         toolbar={
           <>
-            <SelectField
-              label={t("platform.applications.status")}
-              value={status}
-              onChange={(e) => update({ status: e.target.value })}
-            >
-              <option value="">{t("platform.applications.all")}</option>
-              {(["approved", "setup", "live", "suspended", "deactivated"] as const).map((s) => (
-                <option key={s} value={s}>
-                  {t(`platform.status.facility.${s}`)}
-                </option>
-              ))}
-            </SelectField>
             <SelectField
               label={t("platform.review.type")}
               value={facilityType}
@@ -344,9 +433,47 @@ function Facilities() {
         loading={list.isPending}
         error={list.isError}
         onRetry={() => void list.refetch()}
-        filtered={Boolean(q || status || licenceState || facilityType || ownership || missingCode)}
+        filtered={Boolean(
+          q || status || licenceState || facilityType || ownership || missingCode || noAdmin,
+        )}
       />
     </div>
+  );
+}
+
+const STATUS_TABS = ["", "live", "setup", "approved", "suspended", "deactivated"] as const;
+
+/** The facility's logo, else its initials on a tinted tile. */
+function FacilityMark({
+  facility,
+  size = "md",
+}: {
+  facility: Pick<PlatformFacility, "name" | "logo_url">;
+  size?: "md" | "lg";
+}) {
+  const box = size === "lg" ? "size-14 rounded-2xl text-body" : "size-10 rounded-xl text-caption";
+  if (facility.logo_url)
+    return (
+      <img
+        src={facility.logo_url}
+        alt=""
+        className={`${box} shrink-0 bg-surface object-contain ring-1 ring-border/70`}
+      />
+    );
+  const initials = facility.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!)
+    .join("")
+    .toUpperCase();
+  return (
+    <span
+      aria-hidden="true"
+      className={`${box} grid shrink-0 place-items-center bg-brand-subtle font-heading font-bold text-on-brand-subtle`}
+    >
+      {initials}
+    </span>
   );
 }
 
@@ -437,19 +564,100 @@ function FacilityDetail() {
     queryFn: () => api.onboarding.platform.facility(id),
   });
   const [action, setAction] = useState<FacilityAction | null>(null);
+  const [editing, setEditing] = useState(false);
   if (facility.isPending) return <LoadingState />;
   if (facility.isError) return <Alert tone="danger">{t("platform.table.error")}</Alert>;
   const data = facility.data;
+  const actions = ACTIONS[data.status] ?? [];
+  const forward = actions.filter((a) => a !== "deactivate" && a !== "suspend");
+  const risky = actions.filter((a) => a === "deactivate" || a === "suspend");
+  const place = [data.location.sector, data.location.district || data.district?.name]
+    .filter(Boolean)
+    .join(", ");
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title={data.name}
-        back={{ to: "/platform/facilities", label: t("platform.facilities.back") }}
-        badges={<StatusBadge kind="facility" value={data.status} />}
-      />
+      <Link
+        to="/platform/facilities"
+        className="inline-flex min-h-9 items-center gap-1.5 self-start rounded-full px-3 text-body-sm font-semibold text-fg-secondary no-underline hover:bg-subtle hover:text-fg"
+      >
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        {t("platform.facilities.back")}
+      </Link>
+      {/* identity band: the cover photo when there is one, the logo, name, status and place */}
+      <section className="overflow-hidden rounded-2xl bg-surface shadow-card">
+        {data.cover_url && (
+          <img
+            src={data.cover_url}
+            alt=""
+            className="block aspect-[16/4] w-full object-cover"
+            decoding="async"
+          />
+        )}
+        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+          <FacilityMark facility={data} size="lg" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="m-0 font-heading text-h2 font-bold tracking-tight">{data.name}</h1>
+              <StatusBadge kind="facility" value={data.status} />
+            </div>
+            <p className="m-0 text-body-sm text-fg-secondary">
+              {[
+                t(`facility.types.${data.facility_type}`, { defaultValue: data.facility_type }),
+                t(`platform.ownership.${data.ownership}`, { defaultValue: data.ownership }),
+                place,
+                data.moh_facility_code ? `FOSA ${data.moh_facility_code}` : "",
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {data.status !== "deactivated" && (
+              <Button variant="secondary" onClick={() => setEditing(true)}>
+                <PencilSimple aria-hidden="true" className="size-4" />
+                {t("platform.facilities.edit")}
+              </Button>
+            )}
+            {forward.map((a) => (
+              <Button key={a} onClick={() => setAction(a)}>
+                {t(`platform.facilities.actions.${a}`)}
+              </Button>
+            ))}
+            {risky.length > 0 && (
+              <Menu>
+                <MenuTrigger
+                  aria-label={t("platform.facilities.more")}
+                  className={buttonClassName({ variant: "secondary", className: "px-3" })}
+                >
+                  <DotsThree aria-hidden="true" weight="bold" className="size-5" />
+                </MenuTrigger>
+                <MenuContent align="end">
+                  {risky.map((a) => (
+                    <MenuItem key={a} onSelect={() => setAction(a)} className="text-danger">
+                      {a === "suspend" ? (
+                        <Pause aria-hidden="true" className="size-5" />
+                      ) : (
+                        <Prohibit aria-hidden="true" className="size-5" />
+                      )}
+                      {t(`platform.facilities.actions.${a}`)}
+                    </MenuItem>
+                  ))}
+                </MenuContent>
+              </Menu>
+            )}
+          </div>
+        </div>
+      </section>
+      {data.admins.length === 0 && data.status !== "deactivated" && (
+        <Alert tone="warning">{t("platform.facilities.noAdminAlert")}</Alert>
+      )}
       <Tabs defaultValue="overview">
         <TabsList aria-label={data.name}>
           <TabsTrigger value="overview">{t("platform.facilities.tabs.overview")}</TabsTrigger>
+          <TabsTrigger value="staff">
+            {t("platform.facilities.tabs.staff")}
+            <span className="font-normal text-fg-muted tabular-nums">{data.staff_count}</span>
+          </TabsTrigger>
           <TabsTrigger value="licences">{t("platform.facilities.tabs.licences")}</TabsTrigger>
           <TabsTrigger value="history">{t("platform.facilities.tabs.history")}</TabsTrigger>
           <TabsTrigger value="flags">{t("platform.facilities.tabs.flags")}</TabsTrigger>
@@ -457,17 +665,9 @@ function FacilityDetail() {
         <TabsContent value="overview" className="flex flex-col gap-4">
           <FacilityOverview facility={data} />
           <IdentifiersForm facility={data} />
-          <div className="flex flex-wrap gap-2">
-            {(ACTIONS[data.status] ?? []).map((a) => (
-              <Button
-                key={a}
-                variant={a === "deactivate" || a === "suspend" ? "danger" : "primary"}
-                onClick={() => setAction(a)}
-              >
-                {t(`platform.facilities.actions.${a}`)}
-              </Button>
-            ))}
-          </div>
+        </TabsContent>
+        <TabsContent value="staff">
+          <StaffTab facility={data} />
         </TabsContent>
         <TabsContent value="licences">
           <LicencesTab facility={data} />
@@ -482,6 +682,7 @@ function FacilityDetail() {
       {action && (
         <StatusActionDialog facility={data} action={action} onClose={() => setAction(null)} />
       )}
+      {editing && <EditDetailsDialog facility={data} onClose={() => setEditing(false)} />}
     </div>
   );
 }
@@ -1032,3 +1233,410 @@ function FlagsTab({ id }: { id: string }) {
     </div>
   );
 }
+
+/** Everyone with access to the facility and pending invitations; invite a person, e.g. a new
+ * facility admin when the last one left (step-up, reason). */
+function StaffTab({ facility }: { facility: PlatformFacilityDetail }) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const relative = useRelative();
+  const [inviting, setInviting] = useState(false);
+  const staff = useQuery({
+    queryKey: ["platform", "facility", facility.id, "staff"],
+    queryFn: () => api.onboarding.platform.facilityStaff(facility.id),
+  });
+  const cancel = useMutation({
+    mutationFn: (invitationId: string) =>
+      withStepUp(() => api.onboarding.platform.cancelFacilityInvitation(facility.id, invitationId)),
+    onSuccess: (data) =>
+      queryClient.setQueryData(["platform", "facility", facility.id, "staff"], data),
+  });
+  if (staff.isPending) return <LoadingState />;
+  if (staff.isError) return <Alert tone="danger">{t("platform.table.error")}</Alert>;
+  const { members, invitations } = staff.data;
+  const active = members.filter((m) => m.is_active);
+  const removed = members.filter((m) => !m.is_active);
+  const canInvite = facility.status !== "deactivated";
+  return (
+    <div className="flex flex-col gap-4">
+      <Card padding="none" className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-5 py-4">
+          <div className="min-w-0">
+            <h2 className="m-0 font-heading text-h4 font-bold">
+              {t("platform.facilities.staffTitle")}
+            </h2>
+            <p className="m-0 text-body-sm text-fg-secondary">
+              {t("platform.facilities.staffHint")}
+            </p>
+          </div>
+          {canInvite && (
+            <Button onClick={() => setInviting(true)}>
+              <UserPlus aria-hidden="true" className="size-4" />
+              {t("platform.facilities.invite")}
+            </Button>
+          )}
+        </div>
+        {active.length === 0 ? (
+          <p className="m-0 px-5 py-6 text-body-sm text-fg-muted">
+            {t("platform.facilities.noStaff")}
+          </p>
+        ) : (
+          <ul className="m-0 list-none divide-y divide-border/60 p-0">
+            {[...active, ...removed].map((m) => (
+              <li
+                key={m.membership_id}
+                className={cx(
+                  "flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:gap-4",
+                  !m.is_active && "opacity-60",
+                )}
+              >
+                <Avatar name={m.name} />
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <Link
+                    to={`/platform/users/${m.user_id}`}
+                    className="truncate font-semibold text-fg no-underline hover:underline"
+                  >
+                    {m.name}
+                  </Link>
+                  <span className="truncate text-body-sm text-fg-muted">{m.email}</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 sm:w-64">
+                  {m.roles.map((r) => (
+                    <span
+                      key={r}
+                      className={cx(
+                        "rounded-full px-2.5 py-0.5 text-caption font-semibold",
+                        r === "facility_admin"
+                          ? "bg-brand-subtle text-on-brand-subtle"
+                          : "bg-subtle text-fg-secondary",
+                      )}
+                    >
+                      {roleLabel(r as RoleCode, t)}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center gap-4 sm:w-56 sm:justify-end">
+                  {m.is_active ? (
+                    <StatusDot tone={m.mfa_enabled ? "success" : "warning"}>
+                      {m.mfa_enabled
+                        ? t("platform.facilities.twoStepOn")
+                        : t("platform.facilities.twoStepOff")}
+                    </StatusDot>
+                  ) : (
+                    <StatusDot tone="muted">{t("platform.facilities.removed")}</StatusDot>
+                  )}
+                  <span className="text-body-sm whitespace-nowrap text-fg-muted tabular-nums">
+                    {relative(m.last_login)}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+      {invitations.length > 0 && (
+        <Card padding="none" className="overflow-hidden">
+          <h2 className="m-0 border-b border-border/60 px-5 py-4 font-heading text-h4 font-bold">
+            {t("platform.facilities.pending", { count: invitations.length })}
+          </h2>
+          <ul className="m-0 list-none divide-y divide-border/60 p-0">
+            {invitations.map((i) => (
+              <li
+                key={i.id}
+                className="flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:gap-4"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-subtle text-fg-muted">
+                  <EnvelopeSimple aria-hidden="true" className="size-5" />
+                </span>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate font-semibold">{i.full_name || i.email}</span>
+                  <span className="truncate text-body-sm text-fg-muted">
+                    {i.full_name ? `${i.email} · ` : ""}
+                    {i.role_codes.map((r) => roleLabel(r as RoleCode, t)).join(", ")}
+                  </span>
+                </div>
+                <span className="text-body-sm text-fg-muted">
+                  {t("platform.facilities.expires", { when: relative(i.expires_at) })}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  loading={cancel.isPending && cancel.variables === i.id}
+                  onClick={() => cancel.mutate(i.id)}
+                >
+                  {t("platform.facilities.cancelInvite")}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+      {cancel.isError && (
+        <Alert tone="danger" role="alert">
+          {actionError(cancel.error, t("errors.generic"))}
+        </Alert>
+      )}
+      {inviting && (
+        <InviteDialog
+          facility={facility}
+          noAdmin={!active.some((m) => m.roles.includes("facility_admin"))}
+          onClose={() => setInviting(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function InviteDialog({
+  facility,
+  noAdmin,
+  onClose,
+}: {
+  facility: PlatformFacilityDetail;
+  noAdmin: boolean;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [roles, setRoles] = useState<RoleCode[]>(noAdmin ? ["facility_admin"] : []);
+  const [reason, setReason] = useState("");
+  const invite = useMutation({
+    mutationFn: () =>
+      withStepUp(() =>
+        api.onboarding.platform.inviteToFacility(facility.id, {
+          email: email.trim(),
+          full_name: name.trim(),
+          role_codes: roles,
+          reason: reason.trim(),
+        }),
+      ),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["platform", "facility", facility.id, "staff"], data);
+      onClose();
+    },
+  });
+  const fields = isApiError(invite.error) ? invite.error : null;
+  const ready = email.includes("@") && roles.length > 0 && reason.trim().length >= 5;
+  return (
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={t("platform.facilities.inviteTitle", { name: facility.name })}
+      description={t("platform.facilities.inviteHint")}
+      closeLabel={t("platform.table.close", { defaultValue: "Close" })}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>
+            {t("platform.facilities.cancel")}
+          </Button>
+          <Button type="submit" form="invite-form" loading={invite.isPending} disabled={!ready}>
+            {t("platform.facilities.sendInvite")}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="invite-form"
+        noValidate
+        className="flex flex-col gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (ready) invite.mutate();
+        }}
+      >
+        <TextField
+          label={t("platform.form.email")}
+          type="email"
+          autoComplete="off"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={fields?.fieldError("email") ?? undefined}
+        />
+        <TextField
+          label={t("platform.facilities.fullName")}
+          optional
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+          <legend className="mb-1 font-semibold">{t("platform.facilities.roles")}</legend>
+          <div className="flex flex-wrap gap-2">
+            {ROLE_CODES.map((code) => (
+              <button
+                key={code}
+                type="button"
+                aria-pressed={roles.includes(code)}
+                onClick={() =>
+                  setRoles(
+                    roles.includes(code) ? roles.filter((r) => r !== code) : [...roles, code],
+                  )
+                }
+                className="min-h-9 cursor-pointer rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary transition-colors hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+              >
+                {roleLabel(code, t)}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <TextareaField
+          label={t("platform.reason.text")}
+          hint={t("platform.facilities.reasonHint")}
+          rows={2}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          error={fields?.fieldError("reason") ?? undefined}
+        />
+        {invite.isError && !fields?.fieldError("email") && (
+          <Alert tone="danger" role="alert">
+            {actionError(invite.error, t("errors.generic"))}
+          </Alert>
+        )}
+      </form>
+    </Dialog>
+  );
+}
+
+/** Platform-managed facts the facility can't change itself; each change needs a reason. */
+function EditDetailsDialog({
+  facility,
+  onClose,
+}: {
+  facility: PlatformFacilityDetail;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const [name, setName] = useState(facility.name);
+  const [type, setType] = useState(facility.facility_type);
+  const [ownership, setOwnership] = useState(facility.ownership);
+  const [level, setLevel] = useState(facility.level_of_care || "");
+  const [reason, setReason] = useState("");
+  const body: FacilityDetailsUpdate = { reason: reason.trim() };
+  if (name.trim() !== facility.name) body.name = name.trim();
+  if (type !== facility.facility_type) body.facility_type = type;
+  if (ownership !== facility.ownership) body.ownership = ownership;
+  if (level && level !== facility.level_of_care)
+    body.level_of_care = level as FacilityDetailsUpdate["level_of_care"];
+  const changed = Object.keys(body).length > 1;
+  const save = useMutation({
+    mutationFn: () =>
+      withStepUp(() => api.onboarding.platform.updateFacilityDetails(facility.id, body)),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["platform", "facility", facility.id], data);
+      void queryClient.invalidateQueries({ queryKey: ["platform", "facilities"] });
+      onClose();
+    },
+  });
+  const fields = isApiError(save.error) ? save.error : null;
+  return (
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={t("platform.facilities.editTitle")}
+      description={t("platform.facilities.editHint")}
+      closeLabel={t("platform.table.close", { defaultValue: "Close" })}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>
+            {t("platform.facilities.cancel")}
+          </Button>
+          <Button
+            type="submit"
+            form="details-form"
+            loading={save.isPending}
+            disabled={!changed || reason.trim().length < 5 || name.trim().length < 2}
+          >
+            {t("platform.facilities.saveDetails")}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="details-form"
+        noValidate
+        className="flex flex-col gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (changed) save.mutate();
+        }}
+      >
+        <TextField
+          label={t("platform.facilities.name")}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          error={fields?.fieldError("name") ?? undefined}
+        />
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
+          <SelectField
+            label={t("platform.review.type")}
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            {FACILITY_TYPES.map((code) => (
+              <option key={code} value={code}>
+                {t(`facility.types.${code}`, { defaultValue: code })}
+              </option>
+            ))}
+          </SelectField>
+          <SelectField
+            label={t("platform.review.ownership")}
+            value={ownership}
+            onChange={(e) => setOwnership(e.target.value)}
+          >
+            {(["public", "private", "faith_based", "ngo"] as const).map((o) => (
+              <option key={o} value={o}>
+                {t(`platform.ownership.${o}`)}
+              </option>
+            ))}
+          </SelectField>
+        </div>
+        <SelectField
+          label={t("platform.review.levelOfCare")}
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+        >
+          {!level && <option value="">—</option>}
+          {(["primary", "secondary", "tertiary"] as const).map((l) => (
+            <option key={l} value={l}>
+              {t(`platform.review.level.${l}`)}
+            </option>
+          ))}
+        </SelectField>
+        <p className="m-0 text-body-sm text-fg-muted">
+          {t("platform.facilities.slugFixed", { slug: facility.slug })}
+        </p>
+        <TextareaField
+          label={t("platform.reason.text")}
+          hint={t("platform.facilities.reasonHint")}
+          rows={2}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          error={fields?.fieldError("reason") ?? undefined}
+        />
+        {save.isError && !fields?.fieldError("reason") && (
+          <Alert tone="danger" role="alert">
+            {actionError(save.error, t("errors.generic"))}
+          </Alert>
+        )}
+      </form>
+    </Dialog>
+  );
+}
+
+const ROLE_CODES: RoleCode[] = [
+  "facility_admin",
+  "doctor",
+  "receptionist",
+  "pharmacist",
+  "cashier",
+  "triage_nurse",
+  "lab_technician",
+];

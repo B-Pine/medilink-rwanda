@@ -3511,6 +3511,11 @@ paths:
           type: boolean
         description: Only facilities without a FOSA ID
       - in: query
+        name: no_admin
+        schema:
+          type: boolean
+        description: Only facilities without an admin
+      - in: query
         name: ordering
         schema:
           type: string
@@ -3687,6 +3692,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/details/:
+    patch:
+      operationId: platform_facility_details_update
+      description: Correct the platform-managed facts (name, type, ownership, level
+        of care).
+      summary: Correct name, type, ownership or level of care; step-up, reason, audit-logged
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFacilityDetailsInputRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacilityDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid input
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
   /api/v1/platform/facilities/{facility_id}/feature-flags/:
     get:
       operationId: platform_facility_feature_flags
@@ -3836,6 +3889,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/invitations/:
+    post:
+      operationId: platform_facility_invite
+      description: Invite someone to the facility, typically a new facility admin
+        when the last one left.
+      summary: Invite a person to the facility (email link); step-up, reason, audit-logged
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityInviteInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityStaff'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid input
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already a member or invited
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Deactivated facility
+  /api/v1/platform/facilities/{facility_id}/invitations/{invitation_id}/:
+    delete:
+      operationId: platform_facility_invitation_revoke
+      summary: Cancel a pending invitation; audit-logged
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityStaff'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
   /api/v1/platform/facilities/{facility_id}/licences/:
     get:
       operationId: platform_facility_licences_list
@@ -4009,6 +4152,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/staff/:
+    get:
+      operationId: platform_facility_staff
+      description: Everyone with access to the facility (active and removed) and pending
+        invitations.
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityStaff'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
   /api/v1/platform/facilities/{facility_id}/start-setup/:
     post:
       operationId: platform_facility_start_setup
@@ -4193,6 +4366,22 @@ paths:
       responses:
         '200':
           description: One row per facility
+  /api/v1/platform/facilities/summary/:
+    get:
+      operationId: platform_facilities_summary
+      description: Counts for the "needs attention" strip above the facility list.
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityAttention'
+          description: ''
   /api/v1/platform/facility-applications/:
     get:
       operationId: platform_facility_applications_list
@@ -8182,6 +8371,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserDetail'
           description: ''
+  /api/v1/platform/users/{user_id}/facilities/{facility_id}/roles/:
+    post:
+      operationId: platform_user_facility_roles
+      description: |-
+        Change a person's roles at one facility, for example when its only facility admin left and
+        someone else must take over. The facility keeps at least one active facility admin.
+      summary: Set a person's roles at a facility; step-up, reason, audit-logged
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolesInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
   /api/v1/platform/users/{user_id}/lock/:
     post:
       operationId: platform_user_lock
@@ -8209,6 +8436,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/platform-admin/{action}/:
+    post:
+      operationId: platform_user_platform_team
+      description: |-
+        Add a person to the platform team or take them off it. Never your own account, never the
+        last platform admin; leaving the team ends the person's sessions.
+      summary: Grant or revoke platform admin; step-up, reason, audit-logged
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+          enum:
+          - grant
+          - revoke
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
           description: ''
   /api/v1/platform/users/{user_id}/resend-verification/:
     post:
@@ -24244,6 +24511,34 @@ components:
       - medilink_number
       - patient_ref
       - sex
+    FacilityAttention:
+      type: object
+      description: Counts for the facility list's "needs attention" strip.
+      properties:
+        total:
+          type: integer
+        by_status:
+          type: object
+          additionalProperties:
+            type: integer
+        no_admin:
+          type: integer
+        licence_expiring:
+          type: integer
+        licence_expired:
+          type: integer
+        licence_missing:
+          type: integer
+        missing_code:
+          type: integer
+      required:
+      - by_status
+      - licence_expired
+      - licence_expiring
+      - licence_missing
+      - missing_code
+      - no_admin
+      - total
     FacilityBlock:
       type: object
       properties:
@@ -24386,6 +24681,64 @@ components:
             pattern: ^\d{9}$
           - type: string
             maxLength: 0
+    FacilityInvitationRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        full_name:
+          type: string
+        role_codes:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        invited_by:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - email
+      - expires_at
+      - full_name
+      - id
+      - invited_by
+      - role_codes
+      - status
+    FacilityInviteInputRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        full_name:
+          type: string
+          maxLength: 150
+        role_codes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleCodeEnum'
+          maxItems: 7
+          minItems: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+      required:
+      - email
+      - reason
+      - role_codes
     FacilityOption:
       type: object
       properties:
@@ -24809,6 +25162,58 @@ components:
       - type
       - wait_range
       - waiting
+    FacilityStaff:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityStaffMember'
+        invitations:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityInvitationRow'
+      required:
+      - invitations
+      - members
+    FacilityStaffMember:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+        mfa_enabled:
+          type: boolean
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        joined_at:
+          type: string
+          format: date-time
+      required:
+      - email
+      - is_active
+      - joined_at
+      - last_login
+      - membership_id
+      - mfa_enabled
+      - name
+      - roles
+      - user_id
     FacilityStatusEnum:
       enum:
       - draft
@@ -30500,6 +30905,26 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedFacilityDetailsInputRequest:
+      type: object
+      description: |-
+        Platform-managed facts: what the facility can't change itself (settings say "ask MediLink
+        support"). Each change needs a reason; the web address (slug) never changes.
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 200
+        facility_type:
+          $ref: '#/components/schemas/FacilityTypeEnum'
+        ownership:
+          $ref: '#/components/schemas/OwnershipEnum'
+        level_of_care:
+          $ref: '#/components/schemas/LevelOfCareEnum'
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
     PatchedFacilityIdentifiersInputRequest:
       type: object
       description: 'PATCH /platform/facilities/{id}/: the government identifiers,
@@ -33016,6 +33441,14 @@ components:
           nullable: true
         photo_count:
           type: integer
+        cover_url:
+          type: string
+          format: uri
+          nullable: true
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
         location:
           $ref: '#/components/schemas/FacilityPlace'
         admins:
@@ -33057,6 +33490,7 @@ components:
       - address
       - admins
       - application_id
+      - cover_url
       - created_at
       - district
       - doctor_count
@@ -33068,6 +33502,7 @@ components:
       - level_of_care
       - licence_state
       - location
+      - logo_url
       - longitude
       - moh_facility_code
       - name
@@ -33120,6 +33555,14 @@ components:
           nullable: true
         photo_count:
           type: integer
+        cover_url:
+          type: string
+          format: uri
+          nullable: true
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
         location:
           $ref: '#/components/schemas/FacilityPlace'
         admins:
@@ -33170,6 +33613,7 @@ components:
       - admins
       - application
       - application_id
+      - cover_url
       - created_at
       - district
       - doctor_count
@@ -33182,6 +33626,7 @@ components:
       - licence_state
       - licences
       - location
+      - logo_url
       - longitude
       - moh_facility_code
       - name
@@ -35503,6 +35948,23 @@ components:
         * `cashier` - Cashier
         * `triage_nurse` - Triage nurse
         * `lab_technician` - Laboratory technician
+    RolesInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        role_codes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleCodeEnum'
+          maxItems: 7
+          minItems: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+      required:
+      - reason
+      - role_codes
     RouteEnum:
       enum:
       - oral

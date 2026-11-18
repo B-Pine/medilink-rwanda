@@ -7,8 +7,16 @@ from rest_framework import serializers
 from medilink.accounts.models import Language
 from medilink.accounts.serializers import StrictSerializer
 from medilink.onboarding.serializers import OverviewSerializer
+from medilink.tenancy.models import RoleCode
 
 USER_KINDS = ("platform", "staff", "patient")
+
+
+class RolesInput(StrictSerializer):
+    role_codes = serializers.ListField(
+        child=serializers.ChoiceField(choices=RoleCode.choices), min_length=1, max_length=7
+    )
+    reason = serializers.CharField(min_length=5, max_length=500)
 
 
 class AccountReasonSerializer(StrictSerializer):

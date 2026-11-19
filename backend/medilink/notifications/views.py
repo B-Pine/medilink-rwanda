@@ -633,7 +633,8 @@ class AppDevicesView(_Inbox):
         responses={
             200: s.PushSubscriptionSerializer,
             201: s.PushSubscriptionSerializer,
-            400: err("Phone push not configured or invalid token"),
+            400: err("Invalid token"),
+            422: err("Phone push not configured"),
         },
     )
     def post(self, request: Request) -> Response:

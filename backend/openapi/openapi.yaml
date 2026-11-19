@@ -178,7 +178,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Phone push not configured or invalid token
+          description: Invalid token
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Phone push not configured
   /api/v1/patient/auth/google/:
     get:
       operationId: patient_auth_google_config

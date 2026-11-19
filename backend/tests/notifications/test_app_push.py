@@ -96,7 +96,7 @@ def test_app_registers_its_token_and_another_account_takes_it_over() -> None:
     patient, other = make_patient_user(), make_patient_user()
     client = _client(patient)
     off = client.post("/api/v1/patient/app-devices/", {"token": TOKEN}, format="json")
-    assert off.status_code == 400  # phone push not configured
+    assert off.status_code == 422  # phone push not configured
     with override_settings(**FIREBASE):
         bad = client.post("/api/v1/patient/app-devices/", {"token": "a b"}, format="json")
         assert bad.status_code == 400

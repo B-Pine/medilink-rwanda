@@ -212,7 +212,7 @@ def _fake_push(results: list[SendResult]) -> Any:
     adapter = channels.get("web_push")
     calls = iter(results)
     return (
-        mock.patch.object(adapter, "is_enabled", return_value=True),
+        mock.patch("medilink.notifications.conf.push_enabled", return_value=True),
         mock.patch.object(adapter, "send", side_effect=lambda *a, **k: next(calls)),
     )
 

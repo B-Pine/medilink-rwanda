@@ -8,6 +8,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Push to the phone app (2026-11-19)
+
+- Added: the phone app gets push notifications through Firebase Cloud Messaging. The app sends
+  its token to `POST /api/v1/patient/app-devices/`; it is stored as a push subscription of kind
+  `app` and removed like any other (`DELETE push-subscriptions/{id}/`). Every notification that
+  goes out as web push now also reaches the phone, with the same texts and preferences. The visit
+  reminders the app schedules itself (24 h, 2 h, 15 minutes, at the start) are not pushed, so they
+  never ring twice. Set `FIREBASE_SERVICE_ACCOUNT` (the service account JSON) to turn it on.
+
 ### Background jobs run on a one-service deploy (2026-11-19)
 
 - Fixed: on Railway no notification email, push or reminder ever went out. Only the API ran;

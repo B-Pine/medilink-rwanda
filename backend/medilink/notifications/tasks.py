@@ -156,6 +156,7 @@ def send_attempt(attempt_id: str) -> None:
             url=inbox_url(notification.audience, notification.pk),
             ttl_seconds=ttl,
             topic=topic(notification.dedupe_key),
+            action_path=notification.action_path or "",
         )
         address = (
             notification.recipient_user.email

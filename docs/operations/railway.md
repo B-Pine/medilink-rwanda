@@ -15,6 +15,12 @@ secret values in this file or in git; they go in Railway's variables only.
 | `worker` | `/backend` | `/backend/railway.worker.json` | No public domain |
 | `beat` | `/backend` | `/backend/railway.beat.json` | No public domain; exactly one replica |
 
+**One service only (trial).** Until `worker` and `beat` exist, `api` runs the Celery worker with
+beat inside it ([`scripts/railway_start.sh`](../../backend/scripts/railway_start.sh)), so emails,
+push, reminders and the listing refresh still go out. Without a worker they wait in Redis and
+never send. Once `worker` and `beat` exist, set `EMBEDDED_WORKER=0` on `api`. Keep `api` at one
+replica while the worker is embedded (two would run two beats and send reminders twice).
+
 All three app services build the same `backend/Dockerfile` (hash-checked `requirements/prod.txt`,
 non-root). There is no top-level `requirements.txt` on purpose: Railway must use the Dockerfile,
 not Railpack.

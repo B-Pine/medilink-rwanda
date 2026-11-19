@@ -257,7 +257,7 @@ Source: [09 · Notifications](../analysis/09-notifications-and-communication.md)
 | FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9, S9b, U8 W7 (#206: visit reminders at the patient's offsets plus "15 minutes" and "it's time" at the start, follow-up and care-schedule reminders, result ready, "almost your turn" from every queue move, counter call) | Both | API, INS, BR (`test_follow_through.py`) | In progress |
 | FR-NOT-08 | Guardians receive dependents' notifications | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-09 | Trilingual versioned templates; no clinical details | P1 | S9 | Backend | UT, INS | In progress |
-| FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9 | Backend | API | In progress |
+| FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9; a delivery queued over 24 h is cancelled, not sent (2026-11-19) | Backend | API, BR (`test_core.py`) | In progress |
 | FR-NOT-11 | Facility and platform announcements | P1 | S9 | Both | API, E2E | In progress |
 | FR-NOT-12 | Tracker keeps screen awake; sound and vibration on call | P1 | S4*, S9 | Frontend | E2E, INS | In progress |
 | FR-NOT-13 | SMS and mobile push adapters | P3 | — | Backend | API | Not started |

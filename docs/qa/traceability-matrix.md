@@ -250,7 +250,7 @@ Source: [09 · Notifications](../analysis/09-notifications-and-communication.md)
 |---|---|---|---|---|---|---|
 | FR-NOT-01 | Event-driven notification service with channel adapters | P1 | S9 | Backend | UT, API | In progress |
 | FR-NOT-02 | In-app inbox and live updates | P1 | S9 | Both | API, E2E | In progress |
-| FR-NOT-03 | Web push: timely permission prompt, push-off banner | P1 | S9 | Both | CMP, E2E, SEC | In progress |
+| FR-NOT-03 | Web push: timely permission prompt, push-off banner | P1 | S9; phone app push over FCM (`app-devices/`, 2026-11-19) | Both | CMP, E2E, SEC, API (`test_app_push.py`) | In progress |
 | FR-NOT-04 | Email notifications with documents and calendar files | P1 | S9, Brevo HTTPS API in production (2026-11-19: Railway blocks SMTP) | Backend | API, UT (`test_mail_brevo.py`) | In progress |
 | FR-NOT-05 | Priority levels, quiet hours, fallback rules | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-06 | Patient, staff and facility preferences | P1 | S9 | Both | API, CMP | In progress |

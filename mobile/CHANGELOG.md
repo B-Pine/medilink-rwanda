@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.2.4 (2026-11-19)
+
+- Fixed: a facility logo that can't load no longer leaves an empty white circle before the name
+  on the Care cards, the Home "Near you" cards and the facility page; the name moves to the start.
+
 ### 1.2.3 (2026-11-18)
 
 - Changed: the facility logo is round, like a profile picture, at the start of the facility's

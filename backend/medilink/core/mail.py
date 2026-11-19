@@ -265,7 +265,9 @@ class BrevoBackend(BaseEmailBackend):
     def __init__(
         self, api_key: str = "", timeout: float = 10, fail_silently: bool = False, **kwargs: Any
     ) -> None:
-        super().__init__(fail_silently=fail_silently, **kwargs)
+        # Django 6.1: the backend keeps fail_silently itself (like the SMTP backend)
+        super().__init__(**kwargs)
+        self.fail_silently = fail_silently
         self.api_key = api_key
         self.timeout = timeout
 

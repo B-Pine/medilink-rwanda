@@ -8,6 +8,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Logos load again (2026-11-19)
+
+- Fixed: every logo showed as a broken image. Logo links asked Cloudinary for "pad" with auto
+  gravity, which it refuses (400); auto gravity is now sent only with the cropping modes.
+
 ### No past times on the cards (2026-11-18)
 
 - Fixed: a card could say "Next time Fri, Nov 6" on Nov 18 when the background jobs (beat and

@@ -63,7 +63,17 @@ class FacilityMiniCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(f.name, style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
+                Row(
+                  children: [
+                    if (f.logoUrl != null) ...[
+                      FacilityLogo(url: f.logoUrl, size: 32),
+                      const SizedBox(width: Space.sm),
+                    ],
+                    Expanded(
+                      child: Text(f.name, style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    ),
+                  ],
+                ),
                 Text(f.place, style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: Space.sm),
                 Row(

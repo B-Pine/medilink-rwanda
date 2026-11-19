@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Logos and covers on every facility card (2026-11-18)
+
+- Added: the facility's logo, round like a profile picture, at the start of its name on every
+  facility card (directory, Find care, dashboard, home page) and on the facility page title; the
+  uploaded photo stays the cover where the drawing was.
+- Changed: the home page "Open now" cards show the cover too (no longer the compact card).
+
 ### Search by insurance (2026-11-18)
 
 - Added: Find care (public and dashboard) searches on the server, so "rama kicukiro" or

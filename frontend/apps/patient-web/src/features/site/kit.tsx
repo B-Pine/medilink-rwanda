@@ -114,10 +114,13 @@ export function PageHeader({
   actions,
   art,
   titleTransition,
+  titleStart,
   description,
   jsonLd,
 }: {
   title: string;
+  /** Shown before the title, e.g. the facility's round logo. */
+  titleStart?: ReactNode;
   lead?: ReactNode;
   /** Search description; defaults to the page's own (`site.meta`), else the site's. */
   description?: string;
@@ -138,14 +141,17 @@ export function PageHeader({
       <div className="flex flex-col gap-3 pb-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex max-w-[44rem] flex-col gap-2">
-            <PageHeading
-              title={title}
-              description={description}
-              jsonLd={jsonLd}
-              className="text-h1 tracking-tight text-fg"
-            >
-              {title}
-            </PageHeading>
+            <div className="flex items-center gap-3">
+              {titleStart}
+              <PageHeading
+                title={title}
+                description={description}
+                jsonLd={jsonLd}
+                className="text-h1 tracking-tight text-fg"
+              >
+                {title}
+              </PageHeading>
+            </div>
             {lead && <p className="m-0 text-body text-fg-secondary">{lead}</p>}
           </div>
           {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -166,16 +172,19 @@ export function PageHeader({
         {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
         <div className="flex animate-enter flex-wrap items-end justify-between gap-6">
           <div className="flex max-w-[48rem] flex-col gap-3">
-            <PageHeading
-              title={title}
-              description={description}
-              jsonLd={jsonLd}
-              className="font-heading text-page-title font-bold text-balance text-fg"
-            >
-              <span style={titleTransition ? { viewTransitionName: titleTransition } : undefined}>
-                {title}
-              </span>
-            </PageHeading>
+            <div className="flex items-center gap-4">
+              {titleStart}
+              <PageHeading
+                title={title}
+                description={description}
+                jsonLd={jsonLd}
+                className="font-heading text-page-title font-bold text-balance text-fg"
+              >
+                <span style={titleTransition ? { viewTransitionName: titleTransition } : undefined}>
+                  {title}
+                </span>
+              </PageHeading>
+            </div>
             {lead && (
               <p className="ml-measure m-0 text-body leading-relaxed text-pretty text-fg-secondary">
                 {lead}

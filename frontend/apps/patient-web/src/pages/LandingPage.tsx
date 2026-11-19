@@ -547,7 +547,6 @@ export function LandingPage() {
           <FacilityExplorer
             label={t("site.home3.openTitle")}
             rows={listed.slice(0, 3)}
-            compact
             loading={results.isPending}
             fetching={results.isFetching}
             failed={results.isError}

@@ -172,3 +172,12 @@ def test_cloudinary_check_command() -> None:
         call_command("cloudinary_check")
     with override_settings(CLOUDINARY={**CFG, "api_secret": ""}), pytest.raises(CommandError):
         call_command("cloudinary_check")
+
+
+def test_logo_url_has_no_auto_gravity() -> None:
+    """Cloudinary answers 400 to "pad" with auto gravity (the broken logo of 2026-11-19); photos
+    keep the smart crop."""
+    logo = services.image_url("logo1", w=320, h=320, crop="pad")
+    assert logo is not None and "c_pad" in logo and "g_auto" not in logo
+    photo = services.image_url("photo1", w=800, h=350)
+    assert photo is not None and "c_fill" in photo and "g_auto" in photo

@@ -165,19 +165,30 @@ export function FacilityEntry({
           </p>
           {compact && <Status result={result} />}
         </div>
-        <Heading
-          id={`place-${result.slug}`}
-          className="m-0 font-heading text-[1.1875rem] leading-snug font-bold text-balance"
-        >
-          <Link
-            to={`/facilities/${result.slug}`}
-            viewTransition
-            className="text-fg no-underline decoration-2 underline-offset-4 transition-colors duration-150 after:absolute after:inset-0 after:content-[''] hover:text-link"
-            style={{ viewTransitionName: `facility-name-${result.slug}` }}
+        <div className="flex items-center gap-3">
+          {result.logo_url && (
+            <img
+              src={result.logo_url}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="size-11 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-hairline"
+            />
+          )}
+          <Heading
+            id={`place-${result.slug}`}
+            className="m-0 min-w-0 font-heading text-[1.1875rem] leading-snug font-bold text-balance"
           >
-            {result.name}
-          </Link>
-        </Heading>
+            <Link
+              to={`/facilities/${result.slug}`}
+              viewTransition
+              className="text-fg no-underline decoration-2 underline-offset-4 transition-colors duration-150 after:absolute after:inset-0 after:content-[''] hover:text-link"
+              style={{ viewTransitionName: `facility-name-${result.slug}` }}
+            >
+              {result.name}
+            </Link>
+          </Heading>
+        </div>
         {(place || result.distance_km !== null) && (
           <p className="m-0 -mt-1 inline-flex flex-wrap items-center gap-x-1.5 text-body-sm text-fg-secondary">
             <MapPin aria-hidden="true" weight="duotone" className="size-4 shrink-0 text-fg-muted" />

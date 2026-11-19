@@ -25146,6 +25146,9 @@ components:
         cover_url:
           type: string
           nullable: true
+        logo_url:
+          type: string
+          nullable: true
       required:
       - accepts_insurance
       - allows_remote_join
@@ -25157,6 +25160,7 @@ components:
       - lat
       - level_of_care
       - lng
+      - logo_url
       - name
       - next_slot_at
       - open_now

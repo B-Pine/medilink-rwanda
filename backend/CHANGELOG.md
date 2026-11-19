@@ -8,6 +8,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Logos load again (2026-11-19)
+
+- Fixed: every logo showed as a broken image. Logo links asked Cloudinary for "pad" with auto
+  gravity, which it refuses (400); auto gravity is now sent only with the cropping modes.
+
+### No past times on the cards (2026-11-18)
+
+- Fixed: a card could say "Next time Fri, Nov 6" on Nov 18 when the background jobs (beat and
+  worker) had not rebuilt the listing. Search never returns a time that has passed, and "available
+  today" ignores one. `refresh_listing` (run on every deploy) now also creates the coming weeks'
+  appointment times before rebuilding the listing.
+
+### Logos and covers on every facility card (2026-11-18)
+
+- Added: search results carry the facility's `logo_url` (listing field `logo_public_id`,
+  migration `facilities 0008`).
+- Fixed: a card could stay on the drawing when its photo was saved before the listing was rebuilt.
+  Opening the facility's page now corrects that facility's card, and every Railway deploy runs
+  `refresh_listing` after `migrate` (a failure there does not stop the deploy).
+
 ### Search by insurance (2026-11-18)
 
 - Added: facility search takes `q` (name, sector, district, type, service) and `insured_only`. An

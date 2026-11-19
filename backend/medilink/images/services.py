@@ -131,6 +131,9 @@ def verify_asset(public_id: str, kind: str) -> dict[str, Any]:
     return resource
 
 
+AUTO_GRAVITY_CROPS = frozenset({"crop", "fill", "thumb", "lfill", "fill_pad", "auto", "auto_pad"})
+
+
 def image_url(
     public_id: str | None, *, w: int = 800, h: int | None = None, crop: str = "fill"
 ) -> str | None:
@@ -141,11 +144,14 @@ def image_url(
     opts: dict[str, Any] = {
         "width": w,
         "crop": crop,
-        "gravity": "auto",
         "fetch_format": "auto",
         "quality": "auto",
         "secure": True,
     }
+    # Cloudinary refuses auto gravity with "pad" (logos: the whole mark fits in the square) and
+    # answers 400, which showed as a broken image: only the cropping modes take it.
+    if crop in AUTO_GRAVITY_CROPS:
+        opts["gravity"] = "auto"
     if h:
         opts["height"] = h
     url: str = cloudinary.utils.cloudinary_url(public_id, **opts)[0]

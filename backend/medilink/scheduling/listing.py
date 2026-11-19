@@ -149,7 +149,7 @@ def _hours(facility_id: Any, start: dt.date) -> list[list[Any]]:
 UPLOAD_COVER = "upload:"
 
 
-def _cover(facility_id: Any, profile: Profile | None) -> str:
+def cover_of(facility_id: Any, profile: Profile | None) -> str:
     """The card's cover: the first Cloudinary photo, else the first clean scanned photo (stored as
     "upload:<id>"), else "" (the card draws the facility)."""
     if profile is None:
@@ -172,6 +172,12 @@ def _cover(facility_id: Any, profile: Profile | None) -> str:
             if pk in clean:
                 return f"{UPLOAD_COVER}{pk}"
     return ""
+
+
+def _upcoming(row: PublicListing, now: dt.datetime) -> dt.datetime | None:
+    """The row's next free time, or None once it has passed (a listing the background refresh has
+    not rebuilt since; a time in the past is never shown)."""
+    return row.next_slot_at if row.next_slot_at and row.next_slot_at > now else None
 
 
 def cover_url(slug: str, cover: str) -> str | None:
@@ -228,7 +234,8 @@ def refresh(facility_id: Any) -> int:
                 level_of_care=(profile.level_of_care if profile else "")
                 or LEVEL_BY_TYPE.get(str(facility.facility_type), ""),
                 emergency_department=bool(profile and profile.emergency_department),
-                cover_public_id=_cover(facility_id, profile),
+                cover_public_id=cover_of(facility_id, profile),
+                logo_public_id=profile.logo_public_id if profile else "",
                 latitude=profile.latitude if profile else None,
                 longitude=profile.longitude if profile else None,
                 service_id=service.pk,
@@ -348,7 +355,9 @@ def search(query: Query) -> dict[str, Any]:
             now.astimezone(KIGALI).date() + dt.timedelta(days=1), dt.time.min, KIGALI
         )
         rows = rows.filter(
-            Q(next_slot_at__lt=end_of_day) | Q(allows_remote_join=True) | Q(allows_walk_in=True)
+            Q(next_slot_at__gte=now, next_slot_at__lt=end_of_day)
+            | Q(allows_remote_join=True)
+            | Q(allows_walk_in=True)
         )
     typed_insurer, text = parse_text(query.q)
     insurer_code = query.insurer_code or typed_insurer
@@ -369,7 +378,7 @@ def search(query: Query) -> dict[str, Any]:
                 row.facility_id, [row.facility_name, row.sector, row.district, row.facility_type]
             ).extend(str(v) for v in (row.service_name_i18n or {}).values())
         current = best.get(row.facility_id)
-        if current is None or (row.next_slot_at and not current.next_slot_at):
+        if current is None or (_upcoming(row, now) and not _upcoming(current, now)):
             best[row.facility_id] = row
     if text:
         words = text.split()
@@ -406,7 +415,7 @@ def search(query: Query) -> dict[str, Any]:
                 ),
                 # U-01 (S5 D-14): accepted insurers only, never an amount
                 "insurers": sorted(row.insurers or {}),
-                "next_slot_at": row.next_slot_at,
+                "next_slot_at": _upcoming(row, now),
                 "queue_load": row.queue_load or None,
                 "waiting": row.waiting,
                 "wait_range": wait_range(LiveQueue(row.waiting, row.wait_min, row.wait_max)),
@@ -417,6 +426,7 @@ def search(query: Query) -> dict[str, Any]:
                 "lng": float(row.longitude) if row.longitude is not None else None,
                 # the facility's own cover photo (Cloudinary); the cards draw one without it
                 "cover_url": cover_url(row.facility_slug, row.cover_public_id),
+                "logo_url": image_url(row.logo_public_id, w=160, h=160, crop="pad"),
             }
         )
     if query.near:

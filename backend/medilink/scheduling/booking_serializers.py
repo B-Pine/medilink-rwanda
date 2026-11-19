@@ -75,6 +75,7 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     lng = serializers.FloatField(allow_null=True)
     # a Cloudinary URL, or the public photo path on this host for a scanned photo
     cover_url = serializers.CharField(allow_null=True)
+    logo_url = serializers.CharField(allow_null=True)
 
 
 class FacilitySearchPageSerializer(serializers.Serializer):

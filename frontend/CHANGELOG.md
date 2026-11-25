@@ -17,6 +17,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Changed: date blocks show the weekday, and the year only when it is not this year.
 - Fixed: the facility page's main button reads "Join today's queue" and "Book appointment" in
   English, the same words as the cards and the booking flow.
+- Fixed: a facility map that is rebuilt (a language change, or React's development double mount)
+  zooms back to its places and redraws its pins, instead of staying on all of Rwanda; the facility
+  page map now opens on the street.
 
 ### Logos and covers on every facility card (2026-11-18)
 

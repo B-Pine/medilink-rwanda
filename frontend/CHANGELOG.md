@@ -15,6 +15,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   separate cards (upgrade 12: no stat tiles for their own sake, no card per row); their labels
   wrap instead of being cut off on phones.
 - Changed: date blocks show the weekday, and the year only when it is not this year.
+- Changed: on phones, the home page's "Facilities near you" cards sit in one row that scrolls
+  sideways and stops on each card, instead of a column three cards tall (about 900 px less
+  scrolling); from 36 rem of width the grid is unchanged.
 - Fixed: the facility page's main button reads "Join today's queue" and "Book appointment" in
   English, the same words as the cards and the booking flow.
 - Fixed: a facility map that is rebuilt (a language change, or React's development double mount)

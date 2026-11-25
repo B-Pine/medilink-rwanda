@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient overview polish (2026-11-25)
+
+- Changed: the overview's at-a-glance figures sit in one panel split by hairlines instead of four
+  separate cards (upgrade 12: no stat tiles for their own sake, no card per row); their labels
+  wrap instead of being cut off on phones.
+- Changed: date blocks show the weekday, and the year only when it is not this year.
+- Fixed: the facility page's main button reads "Join today's queue" and "Book appointment" in
+  English, the same words as the cards and the booking flow.
+
 ### Logos and covers on every facility card (2026-11-18)
 
 - Added: the facility's logo, round like a profile picture, at the start of its name on every
